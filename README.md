@@ -1,5 +1,6 @@
 # PROXMOX VNC VM Web GUI (https://zamatallica.ddns.net/)
 
+![full_infrastructure_architecture_wSQL](https://github.com/user-attachments/assets/317eae37-cf0d-4b72-af7e-5b0e04ada3cd)
 
 ## 1. Project Overview
 The **VM Web GUI** provides a web-based interface for accesing virtual machines on Proxmox via **Flask (Python), Node.js, and WebSockets**. It allows users to authenticate, select a VM, and open a VNC session.
