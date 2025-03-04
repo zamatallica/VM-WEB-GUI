@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Secure Proxmox Access</title>
+    <script type="module">
+        import RFB from 'https://cdn.jsdelivr.net/npm/@novnc/novnc@1.3.0/core/rfb.js';
+        window.RFB = RFB;  // Expose RFB globally
+    </script>
+    <script>
+        function loadNoVNC(callback) {
+            if (typeof window.RFB !== "undefined") {
+                console.log("RFB already loaded.");
+                callback();
+                return;
+            }
+    
+            console.log("📥 Loading noVNC...");
+            const script = document.createElement("script");
+            script.src = "https://cdn.jsdelivr.net/npm/@novnc/novnc@1.3.0/core/rfb.js";
+            script.type = "module";
+    
+            script.onload = function() {
+                console.log("noVNC Loaded Successfully!");
+                window.RFB = window.RFB || window.default;
+                callback();
+            };
+    
+            script.onerror = function() {
+                console.error(" Failed to load noVNC!");
+            };
+    
+            document.head.appendChild(script);
+        }
+    
+        // Load noVNC before connecting
+        loadNoVNC(() => {
+            console.log("RFB Loaded:", typeof window.RFB !== "undefined" ? "Available" : "Not Loaded");
+        });
+    </script>
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --primary: #007bff;
+            --text: #fff;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-container, .container {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #4d4d4d;
+            border-radius: 4px;
+            background: #3d3d3d;
+            color: var(--text);
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .error {
+            color: #ff4444;
+            margin-top: 10px;
+        }
+
+        .container {
+            max-width: 2440px;
+            width: 1920px;
+            margin: 0 auto;
+        }
+
+        .vm-selector {
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        select {
+            padding: 10px;
+            border-radius: 4px;
+            background: #3d3d3d;
+            color: #fff;
+            border: 1px solid #4d4d4d;
+            width: 300px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 200px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        #vnc-container {
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 1080px;
+            width: 1920px;
+        }
+
+        .status {
+            margin-top: 10px;
+            color: #888;
+        }
+
+        /* Previous container/vnc styles here */
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-container" id="loginContainer">
+        <h2>Secure Login</h2>
+        <form id="loginForm" onsubmit="event.preventDefault(); attemptLogin();">
+            <input type="text" id="username" placeholder="Username" required autocomplete="username">
+            <input type="password" id="password" placeholder="Password" required autocomplete="current-password" autocorrect="off" spellcheck="false">
+            <button type="submit">Login</button>
+        </form>
+        <div class="error" id="loginError"></div>
+        <div class="security-info">
+            <p>Failed attempts: <span id="attemptCount">0</span>/5</p>
+        </div>
+    </div>
+
+    <!-- Main Proxmox Interface (hidden until login) -->
+    <div class="container hidden" id="mainInterface">
+      <!-- VM selector/content here -->
+      <div class="vm-selector">
+        <h2>Select VM Console</h2>
+        <select id="vmSelect">
+            <option value="">-- Choose a VM --</option>
+            <option value="104">VMSRVSQLW104 </option>
+            <option value="105">VMSRVSQLW105 </option>
+            <option value="106">DEV CLIENT PC </option>
+        </select>
+        <button onclick="connectToVM()">Connect</button>
+        <div class="status" id="status"></div>
+    </div>
+    <div id="vnc-container"></div>
+    </div>
+
+    <script>
+        // Security Configuration
+        const SECURITY = {
+            maxAttempts: 5,  // Maximum number of failed attempts
+            lockoutTime: 300000  // Lockout time in milliseconds (5 minutes)
+        };
+
+        let failedAttempts = 0;
+
+        async function attemptLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('loginError');
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    resetLoginState();
+                    document.getElementById('loginContainer').classList.add('hidden');
+                    document.getElementById('mainInterface').classList.remove('hidden');
+                } else {
+                    handleFailedAttempt(data.message || "Authentication failed");
+                }
+            } catch (error) {
+                showError("Service unavailable");
+                console.error('Login error:', error);
+            }
+        }
+
+        function handleFailedAttempt(message) {
+            failedAttempts++;
+            document.getElementById('attemptCount').textContent = failedAttempts;
+            
+            if (failedAttempts >= SECURITY.maxAttempts) {
+                disableLoginForm();
+                showError("Account locked - too many failed attempts");
+                setTimeout(enableLoginForm, SECURITY.lockoutTime);
+            } else {
+                showError(message || "Invalid credentials");
+            }
+        }
+
+        function resetLoginState() {
+            failedAttempts = 0;
+            document.getElementById('attemptCount').textContent = '0';
+            document.getElementById('loginError').textContent = '';
+        }
+
+        function showError(message) {
+            const errorElement = document.getElementById('loginError');
+            errorElement.textContent = message;
+            setTimeout(() => errorElement.textContent = '', 5000);
+        }
+
+        function disableLoginForm() {
+            document.getElementById('loginForm').style.opacity = '0.5';
+            document.getElementById('loginForm').querySelectorAll('input, button').forEach(el => {
+                el.disabled = true;
+            });
+        }
+
+        function enableLoginForm() {
+            document.getElementById('loginForm').style.opacity = '1';
+            document.getElementById('loginForm').querySelectorAll('input, button').forEach(el => {
+                el.disabled = false;
+            });
+            resetLoginState();
+        }
+
+        // Proxmox connection logic
+        //let vncClient = null;
+
+        let vncClient = null;
+
+ async function connectToVM() {
+    const vmSelect = document.getElementById('vmSelect');
+    const status = document.getElementById('status');
+    const vmId = vmSelect.value;
+
+    if (!vmId) {
+        status.textContent = "Please select a VM first!";
+        return;
+    }
+
+    try {
+        // Get VNC ticket from backend (instead of constructing WebSocket URL here)
+        const response = await fetch(`/api/proxmox/vnc-ticket?vmId=${vmId}`, {
+            method: 'GET',
+            credentials: 'include'
+        });
+ 
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Generated VNC Ticket:", data);
+
+        // Build WebSocket URL (use backend proxy)
+        //const wsUrl = `wss://${window.location.hostname}/proxmox-ws?port=${data.port}&vncticket=${data.ticket}&vmId=${vmId}`;
+         // const PVEAPIToken = "PVEAPIToken=proxmoxweb@pve!VToWtDWlxH1MLbqz37L1ESiY=f7fbc94e-45d1-4573-9de2-79220553c884";
+        //const wsUrl = `wss://192.168.1.17/proxmox-ws?port=${data.port}&vncticket=${data.ticket}&vmId=${vmId}`;
+
+        const wsUrl = `wss://${window.location.hostname}/proxmox-ws?port=${data.port}&vncticket=${data.ticket}&vmId=${vmId}`;
+        //const wsUrl = `wss://${window.location.hostname}/proxmox-ws?port=${data.port}&vncticket=${data.ticket}&vmId=${vmId}`;
+        console.log("Connecting to VNC WebSocket:", wsUrl);
+
+        // Ensure RFB is loaded before connecting
+        if (typeof window.RFB === "undefined") {
+            console.error(" RFB not loaded properly!");
+            return;
+        }
+
+        // Clean up existing VNC client
+        if (vncClient) {
+            vncClient.disconnect();
+            vncClient = null;
+        }
+
+        // Initialize the VNC client
+        const vncContainer = document.getElementById('vnc-container');
+        vncClient = new window.RFB(vncContainer, wsUrl, {
+            wsProtocols: ['binary'], // Ensure binary protocol is used
+        });
+        console.log("Using VNC password as credentials:",data.password);
+
+        // Event listeners for VNC client
+        vncClient.addEventListener('connect', () => {
+            status.textContent = 'Connected!';
+        });
+
+        vncClient.addEventListener('disconnect', (e) => {
+            status.textContent = `Disconnected: ${e.detail.clean ? 'Clean' : 'Dirty'} disconnect`;
+        });
+
+        vncClient.addEventListener('credentialsrequired', () => {
+            console.log("Credentials required for VNC connection.");
+            vncClient.sendCredentials({
+                password: data.ticket // Send the VNC ticket as the password
+            });
+        });
+
+        vncClient.addEventListener('disconnect', (e) => {
+            status.textContent = `Disconnected: ${e.detail.clean ? 'Clean' : 'Dirty'} disconnect`;
+        }); 
+
+        vncClient.addEventListener('credentialsrequired', () => {
+            console.log("Credentials required for VNC connection.");
+            vncClient.sendCredentials({
+                password: data.password, // Send the VNC password
+            });
+        });
+
+
+    } catch (error) {
+        status.textContent = `Connection failed: ${error.message}`;
+    }
+}
+
+    </script>
+</body>
+</html>

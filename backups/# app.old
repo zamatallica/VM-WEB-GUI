@@ -1,0 +1,95 @@
+# app.py (Backend)
+from flask import Flask, request, jsonify
+import pyodbc
+import bcrypt
+import os
+from datetime import datetime, timedelta
+from functools import wraps
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = os.urandom(24)
+app.config['DATABASE'] = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=LN-SQL01,15666;DATABASE=webInterface;UID=webGui;PWD=!B=GEto3{MN1%BQ"
+
+# Rate limiter setup
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"]
+)
+
+def get_db_connection():
+    return pyodbc.connect(app.config['DATABASE'])
+
+def validate_input(username, password):
+    """Sanitize and validate user input"""
+    if not (3 <= len(username) <= 30):
+        return False
+    if not (8 <= len(password) <= 128):
+        return False
+    return all(c.isalnum() or c in {'@', '.', '-', '_'} for c in username)
+
+@app.route('/api/login', methods=['POST'])
+@limiter.limit("5/minute")  # Brute-force protection
+def login():
+    try:
+        data = request.get_json()
+        username = data.get('username', '').strip()
+        password = data.get('password', '').encode('utf-8')
+
+        if not validate_input(username, password):
+            return jsonify(success=False, message="Invalid input"), 400
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Get user with lock status
+        cursor.execute("""
+            SELECT UserId, PasswordHash, failed_attempts, last_attempt 
+            FROM users 
+            WHERE username = ?
+        """, (username,))
+        user = cursor.fetchone()
+
+        if not user:
+            # Simulate similar response time for non-existent users
+            bcrypt.checkpw(password, bcrypt.gensalt())
+            return jsonify(success=False, message="Invalid credentials"), 401
+
+        # Check account lock
+        if user.failed_attempts >= 5 and (
+            datetime.now() - user.last_attempt < timedelta(minutes=5)):
+            return jsonify(success=False, message="Account locked"), 403
+
+        # Verify password
+        if bcrypt.checkpw(password, user.password.encode('utf-8')):
+            # Reset failed attempts
+            cursor.execute("""
+                UPDATE users 
+                SET failed_attempts = 0 
+                WHERE id = ?
+            """, (user.id,))
+            conn.commit()
+            return jsonify(success=True), 200
+        else:
+            # Update failed attempts
+            cursor.execute("""
+                UPDATE users 
+                SET failed_attempts = failed_attempts + 1, 
+                    last_attempt = ? 
+                WHERE id = ?
+            """, (datetime.now(), user.id))
+            conn.commit()
+            return jsonify(success=False, message="Invalid credentials"), 401
+
+    except Exception as e:
+        app.logger.error(f"Login error: {str(e)}")
+        return jsonify(success=False, message="Server error"), 500
+    finally:
+        if 'conn' in locals():
+            conn.close()
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5001)
