@@ -825,3 +825,26 @@
 2025-03-04 13:18:35,011 - INFO - Server IP: 73.70.26.166
 2025-03-04 13:18:35,016 - WARNING -  * Debugger is active!
 2025-03-04 13:18:35,019 - INFO -  * Debugger PIN: 408-165-462
+2025-03-04 13:23:47,227 - INFO - SUCCESS retrieving public IP: 73.70.26.166
+2025-03-04 13:23:47,343 - ERROR - C:\Users\proxmox102\AppData\Roaming\Python\Python313\site-packages\flask_limiter\extension.py:333: UserWarning: Using the in-memory storage for tracking rate limits as no storage was explicitly specified. This is not recommended for production use. See: https://flask-limiter.readthedocs.io#configuring-a-storage-backend for documentation about configuring the storage backend.
+2025-03-04 13:23:47,343 - ERROR -   warnings.warn(
+2025-03-04 13:23:47,345 - INFO - SERVER START ********************************** Starting Flask Web server at 2025-03-04 13:23:47 *********************************************** SERVER START
+2025-03-04 13:23:47,345 - INFO - Environment: development
+2025-03-04 13:23:47,346 - INFO - Server IP: 73.70.26.166
+2025-03-04 13:23:47,346 - INFO - b" * Serving Flask app 'app'"
+2025-03-04 13:23:47,347 - INFO - b' * Debug mode: on'
+2025-03-04 13:23:47,393 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.1.19:5001
+2025-03-04 13:23:47,393 - INFO - [33mPress CTRL+C to quit[0m
+2025-03-04 13:23:47,393 - INFO -  * Restarting with stat
+2025-03-04 13:23:48,118 - INFO - SUCCESS retrieving public IP: 73.70.26.166
+2025-03-04 13:23:48,162 - ERROR - C:\Users\proxmox102\AppData\Roaming\Python\Python313\site-packages\flask_limiter\extension.py:333: UserWarning: Using the in-memory storage for tracking rate limits as no storage was explicitly specified. This is not recommended for production use. See: https://flask-limiter.readthedocs.io#configuring-a-storage-backend for documentation about configuring the storage backend.
+2025-03-04 13:23:48,162 - ERROR -   warnings.warn(
+2025-03-04 13:23:48,163 - INFO - SERVER START ********************************** Starting Flask Web server at 2025-03-04 13:23:48 *********************************************** SERVER START
+2025-03-04 13:23:48,163 - INFO - Environment: development
+2025-03-04 13:23:48,163 - INFO - Server IP: 73.70.26.166
+2025-03-04 13:23:48,169 - WARNING -  * Debugger is active!
+2025-03-04 13:23:48,174 - INFO -  * Debugger PIN: 408-165-462
+2025-03-04 14:03:55,279 - INFO - 127.0.0.1 - - [04/Mar/2025 14:03:55] "[33mPOST /dns-query HTTP/1.0[0m" 404 -

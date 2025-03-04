@@ -93,3 +93,4 @@ URI encoded Ticket: PVEVNC%3A67C77C2A%3A%3AChXIwAXe8lXW3Eif4pUFEozetzB34BSMdG7gh
 ✅ WebSocket upgrade request for /proxmox-ws
 🔄 Forwarding WebSocket to: wss://192.168.1.17:8006/api2/json/nodes/prxmxhomesrvr/qemu/104/vncwebsocket?port=5900&vncticket=PVEVNC%3A67C77C2A%3A%3AChXIwAXe8lXW3Eif4pUFEozetzB34BSMdG7ghvrS0s5Rova8Pk3PAlnyUwsKhz8fzBqp6wQMxuYQsJHkKQQP%2FPjM1n8Pj3D7jjP1qqhXpTKQf1z79mebM8GY0qtFcyK%2FgALSIpdxgfm48z7HKMvXmtAv3eO8TD%2Fwxkqii1PcfOw%2FBGJdt43jTLe76%2Fr7KaWmvreVgEyBsrzAS9LsnIs0Hl1PYoRG%2FpfNsci5TUxFIubS2KExTylg%2FcmU0hadzXLwMwPmkntJygToO3ARIjl2Mjb8odRcZCK%2FEKXpy%2BOV97EfPp2njoHSD7Q84jpU34hPApDug%2FtYuoQlnWY5ev6n8w%3D%3D
 ✅ Connected to Proxmox WebSocket!
+❌ WebSocket Closed.
