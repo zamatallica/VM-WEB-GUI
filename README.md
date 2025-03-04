@@ -1,5 +1,6 @@
 
-# VM Web GUI - Comprehensive Documentation
+# PROXMOX VNC VM Web GUI
+
 
 ## 1. Project Overview
 The **VM Web GUI** provides a web-based interface for managing virtual machines on Proxmox via **Flask (Python), Node.js, and WebSockets**. It allows users to authenticate, select a VM, and open a VNC session.
