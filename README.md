@@ -1,6 +1,4 @@
-
-https://zamatallica.ddns.net/
-# PROXMOX VNC VM Web GUI
+# PROXMOX VNC VM Web GUI (https://zamatallica.ddns.net/)
 
 
 ## 1. Project Overview
