@@ -1,15 +1,36 @@
-# Ignore SSL certificate files
-*.pem
-*.crt
-*.key
+# Ignore environment variable files globally
+**/.env
+**/.env.local
+**/.env.development
+**/.env.production
+**/.env.test
 
-# Ignore environment configuration files
-.env
-.env.local
-.env.development
-.env.production
-.env.test
+# Ignore SSL certificates and security-related files in all directories
+**/*.pem
+**/*.crt
+**/*.key
+**/*.pfx
+**/*.cer
+**/*.der
 
-# Ignore logs
-*.log
-logs/
+# Ignore all log files in all directories
+**/logs/
+**/*.log
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+
+# Ignore system files globally
+**/.DS_Store
+**/Thumbs.db
+
+# Ignore secret config files in all directories
+**/config/secrets.yml
+**/config/*.json
+**/config/*.yaml
+**/config/*.yml
+
+# Ignore private key files in all directories
+**/id_rsa*
+**/id_dsa*
+**/*.pub
