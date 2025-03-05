@@ -78,7 +78,7 @@ const wss = new WebSocketServer({ noServer: true });
 
 // Handle WebSocket upgrade requests
 server.on('upgrade', (request, socket, head) => {
-  console.log("🔄 Incoming WebSocket upgrade request:", request.url);
+  console.log(" Incoming WebSocket upgrade request:", request.url);
 
   // Check if the request is for the /proxmox-ws endpoint
   if (request.url.startsWith('/proxmox-ws')) {
@@ -88,7 +88,7 @@ server.on('upgrade', (request, socket, head) => {
           const vncticket = urlParams.get('vncticket');
           const vmId = urlParams.get('vmId');
     
-    console.log("✅ WebSocket upgrade request for /proxmox-ws");
+    console.log(" WebSocket upgrade request for /proxmox-ws");
 
     // Extract required parameters from the request
     const token = `PVEAPIToken=${process.env.PROXMOX_API_USER}!${process.env.PROXMOX_API_TOKEN}`;
@@ -101,7 +101,7 @@ server.on('upgrade', (request, socket, head) => {
 
     // Reconstruct the target WebSocket URL for Proxmox
     const targetUrl = `wss://${process.env.PROXMOX_HOST}/api2/json/nodes/${process.env.PROXMOX_NODE}/qemu/${vmId}/vncwebsocket?port=${port}&vncticket=${encodeURIComponent(vncticket)}`;
-    console.log("🔄 Forwarding WebSocket to:", targetUrl);
+    console.log(" Forwarding WebSocket to:", targetUrl);
 
     // Create a WebSocket connection to Proxmox with the Authorization Header
     const wsClient = new WebSocket(targetUrl, {
@@ -111,7 +111,7 @@ server.on('upgrade', (request, socket, head) => {
 
     // Pipe data between client and Proxmox WebSocket
     wsClient.on('open', () => {
-      console.log("✅ Connected to Proxmox WebSocket!");
+      console.log(" Connected to Proxmox WebSocket!");
       wss.handleUpgrade(request, socket, head, (ws) => {
         wsClient.on('message', (data) => ws.send(data));
         ws.on('message', (data) => wsClient.send(data));
@@ -119,15 +119,15 @@ server.on('upgrade', (request, socket, head) => {
     });
 
     wsClient.on('error', (err) => {
-      console.error("❌ WebSocket Error:", err);
+      console.error(" WebSocket Error:", err);
       socket.destroy();
     });
 
     wsClient.on('close', () => {
-      console.log("❌ WebSocket Closed.");
+      console.log(" WebSocket Closed.");
     });
   } else {
-    console.error("❌ Invalid WebSocket upgrade path:", request.url);
+    console.error(" Invalid WebSocket upgrade path:", request.url);
     socket.destroy();
   }
 });
