@@ -12,6 +12,7 @@ import re
 import logging
 from logging.handlers import RotatingFileHandler
 import sys
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 
 
 # Configure logging
@@ -66,6 +67,29 @@ load_dotenv()
 app = Flask(__name__, static_folder="static")
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['DATABASE'] = os.getenv('CONNECTION_STR')
+
+# Initialize Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'  # Route to redirect unauthorized users
+
+# UserMixin interface:
+class User(UserMixin):
+    def __init__(self, user_id, username):
+        self.id = user_id
+        self.username = username
+
+@login_manager.user_loader
+def load_user(user_id):
+    conn = get_db_connection()
+    if not conn:
+        return None
+    with conn.cursor() as cursor:
+        cursor.execute("SELECT UserId, username FROM users WHERE UserId = ?", (user_id,))
+        user_data = cursor.fetchone()
+        if user_data:
+            return User(user_data[0], user_data[1])
+    return None
 
 #Configure Websockets
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -155,6 +179,23 @@ def redirect_to_domain():
 def index():
     return render_template('index.html')
 
+@app.route('/api/logout', methods=['POST'])
+@login_required
+def logout():
+    logout_user()
+    return jsonify(success=True), 200
+
+@app.route('/api/validate-session', methods=['GET'])
+def validate_session():
+    if current_user.is_authenticated:
+        return jsonify(success=True, user_id=current_user.id), 200
+    return jsonify(success=False), 401
+
+@app.route('/api/check-session', methods=['GET'])
+def check_session():
+    if current_user.is_authenticated:
+        return jsonify(success=True, user = current_user.username), 200
+    return jsonify(success=False), 401
 
 @app.route('/api/login', methods=['POST'])
 @limiter.limit("5/minute")  # Brute-force protection
@@ -216,6 +257,10 @@ def login():
                 WHERE UserId  = ?
             """, (user_id,))
             conn.commit()
+
+            # Log the user in
+            user_obj = User(user_id, username)
+            login_user(user_obj, remember=True, duration=timedelta(hours=24))  # 24-hour session
             app.logger.info("Login successful")
             return jsonify(success=True), 200
         else:

@@ -147,38 +147,50 @@ app.get('/proxmox-ws', (req, res) => {
 // VNC Ticket Endpoint
 app.get('/api/proxmox/vnc-ticket', async (req, res) => {
   try {
-    const { vmId } = req.query;
+      // Validate the session by making a request to the Flask backend
+      const sessionValidation = await axios.get(`${process.env.FLASK_BACKEND_URL}/api/validate-session`, {
+          headers: {
+              Cookie: req.headers.cookie, // Pass the session cookie to Flask
+          },
+          withCredentials: true,
+      });
 
-    if (!vmId || !/^\d+$/.test(vmId)) {
-      return res.status(400).json({ error: 'Invalid VM ID' });
-    }
-
-    const response = await axios.post(
-      `https://${process.env.PROXMOX_API_BASE}/nodes/${process.env.PROXMOX_NODE}/qemu/${vmId}/vncproxy`,
-      { 'generate-password': 1, websocket: 1 }, // Added required payload
-      {
-        httpsAgent: agent,
-        headers: {
-          Authorization: `PVEAPIToken=${process.env.PROXMOX_API_USER}!${process.env.PROXMOX_API_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
+      if (!sessionValidation.data.success) {
+          return res.status(401).json({ error: 'Unauthorized' });
       }
-    );
 
-    console.log('Proxmox VNC Ticket:', response.data.data);
-    console.log('URI encoded Ticket:', encodeURIComponent(response.data.data.ticket));
+      const { vmId } = req.query;
 
-    res.json({
-      ticket: encodeURIComponent(response.data.data.ticket),
-      port: response.data.data.port,
-      password: response.data.data.password,
-    });
+      if (!vmId || !/^\d+$/.test(vmId)) {
+          return res.status(400).json({ error: 'Invalid VM ID' });
+      }
+
+      const response = await axios.post(
+          `https://${process.env.PROXMOX_API_BASE}/nodes/${process.env.PROXMOX_NODE}/qemu/${vmId}/vncproxy`,
+          { 'generate-password': 1, websocket: 1 }, // Added required payload
+          {
+              httpsAgent: agent,
+              headers: {
+                  Authorization: `PVEAPIToken=${process.env.PROXMOX_API_USER}!${process.env.PROXMOX_API_TOKEN}`,
+                  'Content-Type': 'application/json',
+              },
+          }
+      );
+
+      console.log('Proxmox VNC Ticket:', response.data.data);
+      console.log('URI encoded Ticket:', encodeURIComponent(response.data.data.ticket));
+
+      res.json({
+          ticket: encodeURIComponent(response.data.data.ticket),
+          port: response.data.data.port,
+          password: response.data.data.password,
+      });
   } catch (error) {
-    console.error(' Proxy Error:', error.response?.data || error.message);
-    res.status(500).json({
-      error: 'Failed to get VNC ticket',
-      details: error.response?.data?.errors || error.message,
-    });
+      console.error('Proxy Error:', error.response?.data || error.message);
+      res.status(500).json({
+          error: 'Failed to get VNC ticket',
+          details: error.response?.data?.errors || error.message,
+      });
   }
 });
 

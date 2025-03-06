@@ -6,8 +6,28 @@
     <script type="module">
         import RFB from 'https://cdn.jsdelivr.net/npm/@novnc/novnc@1.3.0/core/rfb.js';
         window.RFB = RFB;  // Expose RFB globally
-    </script>
-    <script>
+
+        async function checkSession() {
+            try {
+                const response = await fetch('/api/check-session', {
+                    method: 'GET',
+                    credentials: 'include'  // Include cookies in the request
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('username-display').textContent = data.user ;
+                    document.getElementById('loginContainer').classList.add('hidden');
+                    document.getElementById('mainInterface').classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Session check error:', error);
+            }
+        }
+
+        // Call this function when the page loads
+        window.onload = checkSession;
+
         function loadNoVNC(callback) {
             if (typeof window.RFB !== "undefined") {
                 console.log("RFB already loaded.");
@@ -185,6 +205,60 @@
             transition: background 0.2s;
         }
 
+        /* Logout User */
+        .logout-btn {
+            position: absolute;
+            background: transparent;
+            color: white;
+            right: 30px;
+            font-size: 12px;
+            font-weight: 100;
+            padding: 8px;
+            border: 1px solid white; /* Outlined border */
+            border-radius: 8px; /* Rounded edges */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: right;
+            align-items: center;
+            gap: 8px;
+            outline: none;
+            width: auto; 
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Hover Effect */
+        .logout-btn:hover {
+            background: rgb(255, 255, 255,.05);
+            color: rgb(160, 160, 160);
+            transform: scale(1.05);
+        }
+
+        /* Active (Click) Effect */
+        .logout-btn:active {
+            transform: scale(0.97);
+            opacity: 0.8;
+        }
+        /* Change icon color on hover */
+        .logout-btn:hover svg {
+            fill: black;
+        }
+        /* Icon inside the button */
+        .logout-btnimg {
+            position: absolute;
+            right: 120px;
+            width: 33px; /* Adjust size */
+            height: 33px;
+            display: block;
+        }
+        .logout-btntxt {
+            position: absolute;
+            right: 160px;
+            display: block;
+            font-weight: 100;
+            color: rgb(218, 217, 217);
+            text-shadow: #888;
+        }
+
         /* Sidebar Toggle Button (Round) */
         #sidebar-toggle {
             position: absolute;
@@ -288,9 +362,13 @@
             <p>Failed attempts: <span id="attemptCount">0</span>/5</p>
         </div>
     </div>
-
     <!-- Main Proxmox Interface (hidden until login) -->
     <div class="container hidden" id="mainInterface">
+        <div classs="logout-container">
+            <img class="logout-btnimg" src="{{ url_for('static', filename='images/user.png') }}" alt="User Icon">
+            <span class="logout-btntxt" id="username-display">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;username</span>
+            <button class="logout-btn" onclick="logout()">&nbsp;&nbsp;Logout&nbsp;&nbsp;</button>
+        </div>
       <!-- VM selector/content here -->
       <div class="vm-selector">
         <h2>Select VM Console</h2>
@@ -338,6 +416,7 @@
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
                     },
+                    credentials: 'include',  // Include cookies in the request
                     body: JSON.stringify({
                         username: username,
                         password: password
@@ -348,6 +427,7 @@
 
                 if (response.ok && data.success) {
                     resetLoginState();
+                    document.getElementById('username-display').textContent = username ;
                     document.getElementById('loginContainer').classList.add('hidden');
                     document.getElementById('mainInterface').classList.remove('hidden');
                 } else {
@@ -483,14 +563,14 @@
                     Console.log("Clipboard sent to VM:", text);
         })
         .catch(err => console.error("Failed to read clipboard:", err));
-}
+        }
 
         // Sidebar Toggle
         window.toggleSidebar = function () {
             document.body.classList.toggle("sidebar-open");
             if( document.getElementById("sidebar-toggle").textContent == ">>"){
                document.getElementById("sidebar-toggle").textContent="<<";
-            } else {
+            }  else {
                 document.getElementById("sidebar-toggle").textContent=">>";
             }
         };
@@ -547,11 +627,27 @@
             vncContainer.classList.add("disconnecting");// Indicate disconnection
         }); 
 
-    } catch (error) {
-        status.textContent = `Connection failed: ${error.message}`;
-        vncContainer.classList.add("bad-disconnect");
+        } catch (error) {
+            status.textContent = `Connection failed: ${error.message}`;
+            vncContainer.classList.add("bad-disconnect");
+        }
     }
-}
+
+    async function logout() {
+        try {
+            const response = await fetch('/api/logout', {
+                method: 'POST',
+                credentials: 'include'  // Include cookies in the request
+            });
+
+            if (response.ok) {
+                document.getElementById('loginContainer').classList.remove('hidden');
+                document.getElementById('mainInterface').classList.add('hidden');
+            }
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+    }
 
     </script>
 </body>
