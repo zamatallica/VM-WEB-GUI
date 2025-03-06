@@ -10,9 +10,16 @@ import https from 'https';
 import http from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import { securityHeaders, apiLimiter } from './security.js';
+import { fileURLToPath } from 'url';
+
 
 // Load custom CA certificate (if provided)
 let customCert = null;
+// Get the file URL of the current module
+const __filename = fileURLToPath(import.meta.url);
+
+// Get the directory name
+const __dirname = path.dirname(__filename);
 const certPath = process.env.PROXMOX_CA_CERT_PATH || path.join(__dirname, 'pve-root-ca.pem');
 
 if (fs.existsSync(certPath)) {
