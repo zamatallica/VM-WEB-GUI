@@ -16,7 +16,7 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    document.getElementById('username-display').textContent = data.user ;
+                    document.getElementById('username-display').textContent = data.user.toLowerCase();
                     document.getElementById('loginContainer').classList.add('hidden');
                     document.getElementById('mainInterface').classList.remove('hidden');
                 }
@@ -209,9 +209,9 @@
         .logout-btn {
             position: absolute;
             background: transparent;
-            color: white;
-            right: 30px;
-            font-size: 12px;
+            color: rgb(255, 255, 255);
+            right: 10px;
+            font-size: 14px;
             font-weight: 100;
             padding: 8px;
             border: 1px solid white; /* Outlined border */
@@ -229,13 +229,11 @@
         /* Hover Effect */
         .logout-btn:hover {
             background: rgb(255, 255, 255,.05);
-            color: rgb(160, 160, 160);
-            transform: scale(1.05);
+            color: rgb(255, 255, 255);
         }
 
         /* Active (Click) Effect */
         .logout-btn:active {
-            transform: scale(0.97);
             opacity: 0.8;
         }
         /* Change icon color on hover */
@@ -245,20 +243,84 @@
         /* Icon inside the button */
         .logout-btnimg {
             position: absolute;
-            right: 120px;
+            cursor: pointer;
+            right: 40px;
             width: 33px; /* Adjust size */
             height: 33px;
             display: block;
+            border-radius: 50%; 
+            transition: outline 0.2s ease-in-out;
+        }
+
+        /* Hover Effect */
+        .logout-btnimg:hover {
+            outline: 4px solid rgb(161, 161, 161,.3);
         }
         .logout-btntxt {
             position: absolute;
-            right: 160px;
+            right: 85px;
             display: block;
             font-weight: 100;
             color: rgb(218, 217, 217);
             text-shadow: #888;
         }
-
+        /* Wrapper for relative positioning */
+        .user-menu-wrapper {
+            display: inline-block;
+        }
+        /* Dropdown Menu */
+        .user-dropdown {
+            display: none; /*Initially hidden */
+            position: absolute;
+            right: 68px;
+            top: 82px;
+            background: #3a3a3a;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            width: 220px;
+            padding: 10px;
+            height: 50px;
+            z-index: 1000;
+        }
+        /* Show Dropdown */
+        .user-menu-wrapper.active .user-dropdown {
+            display: block;
+        }
+        /* Dropdown Items */
+        .user-dropdown button {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 14px;
+            text-align: left;
+            width: 91.5%;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s ease-in-out;
+            
+        }
+        /* Hover Effect */
+        .user-dropdown button:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        /* Divider */
+        .logout-div {
+            width: 98%;
+            border-bottom: .1px;
+            background-color: rgba(56, 54, 54, 0.3);
+            margin: 6px 0;
+        }
+        /* Logout Icon */
+        .logout-btn img {
+            position: relative;
+            top: 4px;
+            width: 16px;
+            height: 16px;
+            margin-right: 6px; /* Space between icon and text */
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
         /* Sidebar Toggle Button (Round) */
         #sidebar-toggle {
             position: absolute;
@@ -277,7 +339,7 @@
             justify-content: center;
             align-items: center;
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-            transition: background 0.2s ease-in-out, transform 0.2s ease-in-out, left 0.3s ease-in-out;
+            transition: background 0.2s ease-in-out, left 0.3s ease-in-out;
         }
                 /* Hover Effect */
         #sidebar-toggle:hover {
@@ -364,10 +426,16 @@
     </div>
     <!-- Main Proxmox Interface (hidden until login) -->
     <div class="container hidden" id="mainInterface">
-        <div classs="logout-container">
-            <img class="logout-btnimg" src="{{ url_for('static', filename='images/user.png') }}" alt="User Icon">
+        <div class="user-menu-wrapper">
+            <img class="logout-btnimg" src="{{ url_for('static', filename='images/user.png') }}" alt="User Icon" onclick="toggleUserMenu()">
             <span class="logout-btntxt" id="username-display">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;username</span>
-            <button class="logout-btn" onclick="logout()">&nbsp;&nbsp;Logout&nbsp;&nbsp;</button>
+            <div class="user-dropdown" id="usermenuwrapper">
+                    <hr class="logout-div">
+                    <button class="logout-btn" onclick="logout()">
+                    <img src="{{ url_for('static', filename='images/logout.png') }}" alt="Logout Icon">  
+                     Log out&nbsp;&nbsp;
+                    </button>
+            </div>
         </div>
       <!-- VM selector/content here -->
       <div class="vm-selector">
@@ -375,7 +443,7 @@
         <select id="vmSelect">
             <option value="">-- Choose a VM --</option>
             <option value="104">VMSRVSQLW104 </option>
-            <option value="105">VMSRVSQLW105 </option>
+            <option value="105">VMSRVSQLW105 </option>]
             <option value="106">DEV CLIENT PC </option>
         </select>
         <button onclick="connectToVM()">Connect</button>
@@ -427,7 +495,7 @@
 
                 if (response.ok && data.success) {
                     resetLoginState();
-                    document.getElementById('username-display').textContent = username ;
+                    document.getElementById('username-display').textContent = username.toLowerCase() ;
                     document.getElementById('loginContainer').classList.add('hidden');
                     document.getElementById('mainInterface').classList.remove('hidden');
                 } else {
@@ -648,7 +716,18 @@
             console.error('Logout error:', error);
         }
     }
+    //-------- GUI FUNCTIONS
+    function toggleUserMenu() {
+            document.querySelector('.user-menu-wrapper').classList.toggle('active');
+        }
 
+        // Close dropdown if clicked outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.querySelector('.user-menu-wrapper');
+            if (!userMenu.contains(event.target)) {
+                userMenu.classList.remove('active');
+            }
+});
     </script>
 </body>
 </html>
