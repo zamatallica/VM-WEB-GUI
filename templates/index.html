@@ -157,7 +157,7 @@
         }
 
         button:hover {
-            background: #0056b3;
+            background: rgba(255, 255, 255, 0.1)
         }
 
         #vnc-container {
@@ -176,15 +176,16 @@
         /* Sidebar */
         #vnc-sidebar {
             position: absolute;
-            left: -220px; /* Initially hidden */
-            top: 230px;
+            left: -240px; /* Initially hidden */
+            top: 250px;
             width: 220px;
-            height: 420px;
+            height: 445px;
             background-color: rgba(30, 30, 30, 0.7);
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
             transition: left 0.3s ease-in-out;
-            padding: 10px;
+            padding: 5px;
             color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-top-right-radius: 15px;  /* Top-right rounded */
             border-bottom-right-radius: 15px; /* Bottom-right rounded */
             overflow: hidden; /* Ensures inner elements don't overflow the rounded corners */
@@ -193,10 +194,10 @@
         /* Sidebar Buttons */
         .sidebar-btn {
             display: block;
-            width: 100%;
+            width: 98%;
             padding: 20px;
             margin: 5px 0;
-            background: rgba(255, 255, 255, 0.1);
+            background:transparent;
             border: none;
             color: white;
             text-align: left;
@@ -205,6 +206,51 @@
             transition: background 0.2s;
         }
 
+        .key-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 columns */
+            gap: 10px;
+            padding: 10px;
+            justify-content: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Sidebar Buttons */
+        .sidebar-key {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            width: 60px;
+            height: 50px;
+            cursor: pointer;
+            transition: background 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Icon inside the button */
+        .sidebar-icons {
+            position: absolute;
+            width: 17px; /* Adjust size */
+            height: 17px;
+            display: left;
+            transition: outline 0.2s ease-in-out;
+        }
+
+        .sidebarKey-icons {
+            position: absolute;
+            width: 27px; /* Adjust size */
+            height: 27px;
+            display: left;
+            transition: outline 0.2s ease-in-out;
+        }
         /* Logout User */
         .logout-btn {
             position: absolute;
@@ -251,7 +297,6 @@
             border-radius: 50%; 
             transition: outline 0.2s ease-in-out;
         }
-
         /* Hover Effect */
         .logout-btnimg:hover {
             outline: 4px solid rgb(161, 161, 161,.3);
@@ -324,23 +369,26 @@
         /* Sidebar Toggle Button (Round) */
         #sidebar-toggle {
             position: absolute;
-            top: 420px;
-            left: 10px; /* Initially hidden */
-            background-color: #007bff;
+            padding: 0; /* Remove extra padding */
+            top: 400px;
+            left: 0; /* Ensure it's at the edge */
+            background-color: rgba(30, 30, 30, 0.7);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
             color: white;
-            width: 40px;
-            height: 40px;
+            width: 20px; /* Make it slim */
+            height: 80px; /* Adjust height to be more tab-like */
             border: none;
             cursor: pointer;
-            border-radius: 50%;
-            font-size: 16px;
+            border-radius: 0px 5px 5px 0px; /* Rounded edge on the right */
+            font-size: 12px;
             text-align: center;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
             transition: background 0.2s ease-in-out, left 0.3s ease-in-out;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
+
                 /* Hover Effect */
         #sidebar-toggle:hover {
             background-color: #0056b3;
@@ -407,7 +455,20 @@
             animation: pulse-red 1.2s infinite alternate;
             transition: border-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
         }
-
+        /* ================================  CRACK THE WORLD ===================================
+        _________            .___         .___  _______/\  ________                .__                         .___ ___.           
+        \_   ___ \  ____   __| _/____   __| _/  \      )/  \______ \   ____   _____|__| ____   ____   ____   __| _/ \_ |__ ___.__. 
+        /    \  \/ /  _ \ / __ |/ __ \ / __ |   /   |   \   |    |  \_/ __ \ /  ___/  |/ ___\ /    \_/ __ \ / __ |   | __ <   |  | 
+        \     \___(  <_> ) /_/ \  ___// /_/ |  /    |    \  |    `   \  ___/ \___ \|  / /_/  >   |  \  ___// /_/ |   | \_\ \___  | 
+        \______  /\____/\____ |\___  >____ |  \____|__  / /_______  /\___  >____  >__\___  /|___|  /\___  >____ |   |___  / ____| 
+                \/            \/    \/     \/          \/          \/     \/     \/  /_____/      \/     \/     \/       \/\/                                                                                                               
+            __________                      __         .__  .__  .__                                                                 
+            \____    /____    _____ _____ _/  |______  |  | |  | |__| ____ _____                                                     
+                /     /\__  \  /     \\__  \\   __\__  \ |  | |  | |  |/ ___\\__  \                                                    
+               /     /_ / __ \|  Y Y  \/ __ \|  |  / __ \|  |_|  |_|  \  \___ / __ \_                                                  
+              /_______ (____  /__|_|  (____  /__| (____  /____/____/__|\___  >____  /    
+            
+        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     </style>
 </head>
 <body>
@@ -433,7 +494,7 @@
                     <hr class="logout-div">
                     <button class="logout-btn" onclick="logout()">
                     <img src="{{ url_for('static', filename='images/logout.png') }}" alt="Logout Icon">  
-                     Log out&nbsp;&nbsp;
+                     Log out
                     </button>
             </div>
         </div>
@@ -450,19 +511,33 @@
         <div class="status" id="status"></div>
     </div>
     <div id="vnc-container">
+                <button id="sidebar-toggle" onclick="toggleSidebar()">></button>
         <!-- Sidebar for NoVNC Controls -->
         <div id="vnc-sidebar">
             <h3>VNC Controls</h3>
-            <button class="sidebar-btn" onclick="toggleFullscreen()">🖥 Fullscreen</button>
-            <button class="sidebar-btn" onclick="toggleScaling()">🔍 Toggle Scaling</button>
-            <button class="sidebar-btn" onclick="sendCtrlAltDel()">⏳ Send Ctrl+Alt+Del</button>
-            <button class="sidebar-btn" onclick="copyToClipboard()">📋 Copy Clipboard</button>
+            <button class="sidebar-btn" onclick="toggleFullscreen()">
+                <img class="sidebar-icons" src="{{ url_for('static', filename='images/maximize_key_white.png') }}" alt="Full Screen Icon">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fullscreen</button>
+            <button class="sidebar-btn" onclick="toggleScaling()">
+                <img class="sidebar-icons" src="{{ url_for('static', filename='images/scale_action_white.png') }}" alt="Scaling Icon">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Toggle Scaling</button>
+            <button class="sidebar-btn" onclick="sendCtrlAltDel()">
+                <img class="sidebar-icons" src="{{ url_for('static', filename='images/ctl_alt_del_action_white.png') }}" alt="CTL ALT DEL Icon">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Send Ctrl+Alt+Del</button>
+            <button class="sidebar-btn" onclick="copyToClipboard()">
+            <img class="sidebar-icons" src="{{ url_for('static', filename='images/clipboard_action_white.png') }}" alt="Clipboard Icon">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Copy Clipboard</button>
+            <div class="key-grid" >
+                <button class="sidebar-key" onclick="sendKey('Escape')"><img class="sidebarKey-icons" src="{{ url_for('static', filename='images/escape_key_white.png') }}" alt="ESC key Icon"></button> 
+                <button class="sidebar-key" onclick="sendKey('MetaLeft')"><img class="sidebarKey-icons" src="{{ url_for('static', filename='images/Win_key_white.png') }}" alt="WIN key Icon"></button>
+                <button class="sidebar-key" onclick="sendKey('ControlLeft')"><img class="sidebarKey-icons" src="{{ url_for('static', filename='images/ctrl_key_white.png') }}" alt="CTRL key Icon"></button>
+                <button class="sidebar-key" onclick="sendKey('AltLeft')"><img class="sidebarKey-icons" src="{{ url_for('static', filename='images/Alt_key_white.png') }}" alt="ALT key Icon"></button>
+                <button class="sidebar-key" onclick="sendKey('Tab')"><img class="sidebarKey-icons" src="{{ url_for('static', filename='images/Tab_key_white.png') }}" alt="TAB key Icon"></button>
+                <button class="sidebar-key"><img class="sidebarKey-icons" src="{{ url_for('static', filename='images/who_icon_key_white.png') }}" alt="?"></button>
+            </div>
         </div>
-    
         <!-- Toggle Button -->
-        <button id="sidebar-toggle" onclick="toggleSidebar()">>></button>
     </div>
-
     <script>
         // Security Configuration
         const SECURITY = {
@@ -636,10 +711,10 @@
         // Sidebar Toggle
         window.toggleSidebar = function () {
             document.body.classList.toggle("sidebar-open");
-            if( document.getElementById("sidebar-toggle").textContent == ">>"){
-               document.getElementById("sidebar-toggle").textContent="<<";
+            if( document.getElementById("sidebar-toggle").textContent == ">"){
+               document.getElementById("sidebar-toggle").textContent="<";
             }  else {
-                document.getElementById("sidebar-toggle").textContent=">>";
+                document.getElementById("sidebar-toggle").textContent=">";
             }
         };
 
@@ -720,6 +795,25 @@
     function toggleUserMenu() {
             document.querySelector('.user-menu-wrapper').classList.toggle('active');
         }
+
+    function sendKey(key) {
+        if (vncClient) {
+            vncClient.sendKey(key, "down");  // Simulate key press down
+            setTimeout(() => vncClient.sendKey(key, "up"), 100); // Release after 100ms
+            console.log(`Sent key: ${key}`);
+        } else {
+            console.error("VNC Client is not initialized");
+        }
+    }
+
+    function sendCtrlAltDel() {
+        if (vncClient) {
+            vncClient.sendCtrlAltDel();
+            console.log("Sent Ctrl+Alt+Del");
+        } else {
+            console.error("VNC Client is not initialized");
+        }
+    }
 
         // Close dropdown if clicked outside
         document.addEventListener('click', function(event) {
