@@ -59,7 +59,7 @@ class StreamToLogger:
         pass
 
 
-# Initialize logging immediately (or you can also move this into main())
+# Initialize logging immediately (or can also move this into main())
 setup_logging()
 # Load environment variables first!!!!!! ALV!!!!!!!!
 load_dotenv()
@@ -220,16 +220,11 @@ def login():
         conn = get_db_connection()
         if not conn:
             return jsonify(success=False, message="Database connection failed"), 500
-        
+                
         with conn.cursor() as cursor:
-            # Get user with lock status
-            cursor.execute("""
-                SELECT UserId, PasswordHash, failed_attempts, last_attempt 
-                FROM users 
-                WHERE username = ?
-            """, (username,))
+            # Get user with lock status using stored procedure
+            cursor.execute("{CALL sp_GetUserForLogin(?)}", (username,))
             user = cursor.fetchone()
-        
 
         if not user:
             app.logger.info("User not found")
@@ -250,27 +245,18 @@ def login():
 
         # Verify password
         if bcrypt.checkpw(password_bytes, password_hash.encode('utf-8')):
-            # Reset failed attempts
-            cursor.execute("""
-                UPDATE users 
-                SET failed_attempts = 0, last_attempt = NULL 
-                WHERE UserId  = ?
-            """, (user_id,))
+            # Reset failed attempts (logon successful)
+            cursor.execute("{CALL sp_ResetFailedAttempts(?, ?)}", (user_id, 0))
             conn.commit()
 
             # Log the user in
             user_obj = User(user_id, username)
-            login_user(user_obj, remember=True, duration=timedelta(hours=24))  # 24-hour session
+            login_user(user_obj, remember=True, duration=timedelta(hours=12))  # 12-hour session
             app.logger.info("Login successful")
             return jsonify(success=True), 200
         else:
             # Update failed attempts
-            cursor.execute("""
-                UPDATE users 
-                SET failed_attempts = failed_attempts + 1, 
-                    last_attempt = ? 
-                WHERE UserId  = ?
-            """, (datetime.now(), user_id))
+            cursor.execute("{CALL sp_ResetFailedAttempts(?, ?)}", (user_id, 1))
             conn.commit()
             app.logger.info("Incorrect password")
             return jsonify(success=False, message="Invalid credentials"), 401
@@ -281,6 +267,41 @@ def login():
     finally:
         if 'conn' in locals():
             conn.close()
+        
+
+@app.route('/api/user-info', methods=['GET'])
+def get_user_info():
+        try:
+            user_id = current_user.id
+            if not user_id:
+                return jsonify({'success': False, 'message': 'Unauthorized'}), 401
+
+            conn = get_db_connection()
+            if not conn:
+                return jsonify(success=False, message="Database connection failed"), 500
+                    
+            with conn.cursor() as cursor:
+                cursor.execute("{CALL sp_Get_User_Info(?)}", (user_id,))
+                user_info = cursor.fetchone()
+
+            if not user_info:
+                return jsonify({'success': False, 'message': 'User not found'}), 404
+
+            first_name, last_name, email, profile_pic = user_info
+            return jsonify({
+                'success':      True,
+                'first_name':  first_name,
+                'last_name':   last_name,
+                'email':       email,
+                'profile_pic': profile_pic
+            })
+        
+        except Exception as e:
+            return jsonify({'success': False, 'message': str(e)},f"UserID:{user_id}"), 500
+
+        finally:
+            if conn:
+                conn.close()
 
 if __name__ == '__main__':
     start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

@@ -19,6 +19,7 @@
                     document.getElementById('username-display').textContent = data.user.toLowerCase();
                     document.getElementById('loginContainer').classList.add('hidden');
                     document.getElementById('mainInterface').classList.remove('hidden');
+                    getUserProfileInfo()
                 }
             } catch (error) {
                 console.error('Session check error:', error);
@@ -290,7 +291,8 @@
         .logout-btnimg {
             position: absolute;
             cursor: pointer;
-            right: 40px;
+            top: 40;
+            right: 44px;
             width: 33px; /* Adjust size */
             height: 33px;
             display: block;
@@ -455,18 +457,18 @@
             animation: pulse-red 1.2s infinite alternate;
             transition: border-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
         }
-        /* ================================  CRACK THE WORLD ===================================
+        /* ================================  CRACK THE WORLD =========================================================================
         _________            .___         .___  _______/\  ________                .__                         .___ ___.           
         \_   ___ \  ____   __| _/____   __| _/  \      )/  \______ \   ____   _____|__| ____   ____   ____   __| _/ \_ |__ ___.__. 
         /    \  \/ /  _ \ / __ |/ __ \ / __ |   /   |   \   |    |  \_/ __ \ /  ___/  |/ ___\ /    \_/ __ \ / __ |   | __ <   |  | 
         \     \___(  <_> ) /_/ \  ___// /_/ |  /    |    \  |    `   \  ___/ \___ \|  / /_/  >   |  \  ___// /_/ |   | \_\ \___  | 
-        \______  /\____/\____ |\___  >____ |  \____|__  / /_______  /\___  >____  >__\___  /|___|  /\___  >____ |   |___  / ____| 
+         \______  /\____/\____ |\___  >____ |  \____|__  / /_______  /\___  >____  >__\___  /|___|  /\___  >____ |   |___  / ____| 
                 \/            \/    \/     \/          \/          \/     \/     \/  /_____/      \/     \/     \/       \/\/                                                                                                               
-            __________                      __         .__  .__  .__                                                                 
-            \____    /____    _____ _____ _/  |______  |  | |  | |__| ____ _____                                                     
-                /     /\__  \  /     \\__  \\   __\__  \ |  | |  | |  |/ ___\\__  \                                                    
-               /     /_ / __ \|  Y Y  \/ __ \|  |  / __ \|  |_|  |_|  \  \___ / __ \_                                                  
-              /_______ (____  /__|_|  (____  /__| (____  /____/____/__|\___  >____  /    
+             __________                      __         .__  .__  .__                                                                 
+             \____    /____    _____ _____ _/  |______  |  | |  | |__| ____ _____                                                     
+               /     /\__  \  /     \\__  \\   __\__  \ |  | |  | |  |/ ___\\__  \                                                    
+              /     /_ / __ \|  Y Y  \/ __ \|  |  / __ \|  |_|  |_|  \  \___ / __ \_                                                  
+             /_______ (____  /__|_|  (____  /__| (____  /____/____/__|\___  >____  /    
             
         +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     </style>
@@ -488,7 +490,7 @@
     <!-- Main Proxmox Interface (hidden until login) -->
     <div class="container hidden" id="mainInterface">
         <div class="user-menu-wrapper">
-            <img class="logout-btnimg" src="{{ url_for('static', filename='images/user.png') }}" alt="User Icon" onclick="toggleUserMenu()">
+            <img  id="profile-pic" class="logout-btnimg" src="{{ url_for('static', filename='images/user.png') }}" alt="User Icon" onclick="toggleUserMenu()">
             <span class="logout-btntxt" id="username-display">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;username</span>
             <div class="user-dropdown" id="usermenuwrapper">
                     <hr class="logout-div">
@@ -528,12 +530,12 @@
             <img class="sidebar-icons" src="{{ url_for('static', filename='images/clipboard_action_white.png') }}" alt="Clipboard Icon">
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Copy Clipboard</button>
             <div class="key-grid" >
-                <button class="sidebar-key" onclick="sendKey('Escape')"><img class="sidebarKey-icons" src="{{ url_for('static', filename='images/escape_key_white.png') }}" alt="ESC key Icon"></button> 
-                <button class="sidebar-key" onclick="sendKey('MetaLeft')"><img class="sidebarKey-icons" src="{{ url_for('static', filename='images/Win_key_white.png') }}" alt="WIN key Icon"></button>
-                <button class="sidebar-key" onclick="sendKey('ControlLeft')"><img class="sidebarKey-icons" src="{{ url_for('static', filename='images/ctrl_key_white.png') }}" alt="CTRL key Icon"></button>
-                <button class="sidebar-key" onclick="sendKey('AltLeft')"><img class="sidebarKey-icons" src="{{ url_for('static', filename='images/Alt_key_white.png') }}" alt="ALT key Icon"></button>
-                <button class="sidebar-key" onclick="sendKey('Tab')"><img class="sidebarKey-icons" src="{{ url_for('static', filename='images/Tab_key_white.png') }}" alt="TAB key Icon"></button>
-                <button class="sidebar-key"><img class="sidebarKey-icons" src="{{ url_for('static', filename='images/who_icon_key_white.png') }}" alt="?"></button>
+                <button class="sidebar-key" onclick="sendKey('Escape')">     <img class="sidebarKey-icons" src="{{ url_for('static', filename='images/escape_key_white.png') }}"   alt="ESC key Icon" ></button> 
+                <button class="sidebar-key" onclick="sendKey('MetaLeft')">   <img class="sidebarKey-icons" src="{{ url_for('static', filename='images/Win_key_white.png') }}"      alt="WIN key Icon" ></button>
+                <button class="sidebar-key" onclick="sendKey('ControlLeft')"><img class="sidebarKey-icons" src="{{ url_for('static', filename='images/ctrl_key_white.png') }}"     alt="CTRL key Icon"></button>
+                <button class="sidebar-key" onclick="sendKey('AltLeft')">    <img class="sidebarKey-icons" src="{{ url_for('static', filename='images/Alt_key_white.png') }}"      alt="ALT key Icon" ></button>
+                <button class="sidebar-key" onclick="sendKey('Tab')">        <img class="sidebarKey-icons" src="{{ url_for('static', filename='images/Tab_key_white.png') }}"      alt="TAB key Icon" ></button>
+                <button class="sidebar-key">                                 <img class="sidebarKey-icons" src="{{ url_for('static', filename='images/who_icon_key_white.png') }}" alt="?">            </button>
             </div>
         </div>
         <!-- Toggle Button -->
@@ -573,6 +575,7 @@
                     document.getElementById('username-display').textContent = username.toLowerCase() ;
                     document.getElementById('loginContainer').classList.add('hidden');
                     document.getElementById('mainInterface').classList.remove('hidden');
+                    getUserProfileInfo();
                 } else {
                     handleFailedAttempt(data.message || "Authentication failed");
                 }
@@ -623,8 +626,6 @@
         }
 
         // Proxmox connection logic
-        //let vncClient = null;
-
         let vncClient = null;
 
  async function connectToVM() {
@@ -786,35 +787,71 @@
             if (response.ok) {
                 document.getElementById('loginContainer').classList.remove('hidden');
                 document.getElementById('mainInterface').classList.add('hidden');
+                // Clean up existing VNC client
+                if (vncClient) {
+                    vncClient.disconnect();
+                    vncClient = null;
+                    vncContainer.classList.remove("connected", "bad-disconnect","disconnecting");
+                    status.textContent = ""
+                }
             }
         } catch (error) {
             console.error('Logout error:', error);
         }
     }
     //-------- GUI FUNCTIONS
+    async function getUserProfileInfo() {
+        try{
+            const response= await fetch('/api/user-info',{
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Fetching Users Pofile:", data);
+
+        // Ensure the data exists before using it
+        if (data.success) {
+            const firstName   = data.first_name || "Unknown";
+            const lastName    = data.last_name  || "";
+            const email       = data.email      || "No email";
+            const profilePic  = data.profile_pic || "/static/images/user.png"; // Default pic if none
+            //full profile pic path
+            const profilePicPath = `/static/images/${profilePic}`;
+            console.log("Profile Pic Path:", profilePicPath);
+
+        // Update UI elements
+         //document.getElementById('username-display').textContent = `${firstName} ${lastName}`;
+         //document.getElementById('user-email').textContent = email;
+           document.getElementById('profile-pic').src = profilePicPath;
+        } else {
+            console.error("User profile retrieval failed:", data.message);
+        }
+
+        return data; // In case I use it elsewhere
+
+    } catch (error) {
+            console.error("Unable to retrieve user's profile", error);
+    }
+    }
+
     function toggleUserMenu() {
             document.querySelector('.user-menu-wrapper').classList.toggle('active');
         }
 
     function sendKey(key) {
-        if (vncClient) {
-            vncClient.sendKey(key, "down");  // Simulate key press down
-            setTimeout(() => vncClient.sendKey(key, "up"), 100); // Release after 100ms
-            console.log(`Sent key: ${key}`);
-        } else {
-            console.error("VNC Client is not initialized");
-        }
+        window.sendKey = function () {
+            if (vncClient) {
+                vncClient.sendKey(key);
+            } else {
+                console.error("VNC Client is not initialized");
+            }
+        };
     }
-
-    function sendCtrlAltDel() {
-        if (vncClient) {
-            vncClient.sendCtrlAltDel();
-            console.log("Sent Ctrl+Alt+Del");
-        } else {
-            console.error("VNC Client is not initialized");
-        }
-    }
-
         // Close dropdown if clicked outside
         document.addEventListener('click', function(event) {
             const userMenu = document.querySelector('.user-menu-wrapper');
