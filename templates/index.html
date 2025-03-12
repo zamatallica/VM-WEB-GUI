@@ -291,7 +291,7 @@
         .logout-btnimg {
             position: absolute;
             cursor: pointer;
-            top: 40;
+            top: 45px;
             right: 44px;
             width: 33px; /* Adjust size */
             height: 33px;
@@ -816,10 +816,11 @@
 
         // Ensure the data exists before using it
         if (data.success) {
-            const firstName   = data.first_name || "Unknown";
-            const lastName    = data.last_name  || "";
-            const email       = data.email      || "No email";
+            const firstName   = data.first_name  || "Unknown";
+            const lastName    = data.last_name   || "";
+            const email       = data.email       || "No email";
             const profilePic  = data.profile_pic || "/static/images/user.png"; // Default pic if none
+            const alias       = data.alias       || "Unknown";
             //full profile pic path
             const profilePicPath = `/static/images/${profilePic}`;
             console.log("Profile Pic Path:", profilePicPath);
@@ -827,7 +828,8 @@
         // Update UI elements
          //document.getElementById('username-display').textContent = `${firstName} ${lastName}`;
          //document.getElementById('user-email').textContent = email;
-           document.getElementById('profile-pic').src = profilePicPath;
+           document.getElementById('username-display').textContent = alias;
+           document.getElementById('profile-pic').src              = profilePicPath;
         } else {
             console.error("User profile retrieval failed:", data.message);
         }

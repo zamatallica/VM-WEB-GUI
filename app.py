@@ -134,7 +134,7 @@ limiter = Limiter(
 
 def get_db_connection():
     try:
-        app.logger.info("Attempting to establish database connection...")
+        app.logger.info(f"Attempting to establish database connection:  {app.config['DATABASE']}")
         conn = pyodbc.connect(app.config['DATABASE'])
         app.logger.info("Database connection established successfully.")
         return conn
@@ -287,13 +287,14 @@ def get_user_info():
             if not user_info:
                 return jsonify({'success': False, 'message': 'User not found'}), 404
 
-            first_name, last_name, email, profile_pic = user_info
+            first_name, last_name, email, profile_pic, alias = user_info
             return jsonify({
-                'success':      True,
-                'first_name':  first_name,
-                'last_name':   last_name,
-                'email':       email,
-                'profile_pic': profile_pic
+                    'success':        True,
+                 'first_name':  first_name,
+                  'last_name':   last_name,
+                      'email':       email,
+                'profile_pic': profile_pic,
+                      'alias':       alias
             })
         
         except Exception as e:
