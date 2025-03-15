@@ -298,11 +298,50 @@ def get_user_info():
             })
         
         except Exception as e:
-            return jsonify({'success': False, 'message': str(e)},f"UserID:{user_id}"), 500
+            return jsonify({'success': False, 'message': str(e), 'user_id': user_id}), 500
 
         finally:
             if conn:
                 conn.close()
+                
+@app.route('/api/get-vms', methods=['GET'])
+def get_vms():
+    user_id = None
+
+    try:
+            user_id = current_user.id
+            if not user_id:
+                return jsonify({'success': False, 'message': 'Unauthorized'}), 401
+
+            conn = get_db_connection()
+            if not conn:
+                return jsonify(success=False, message="Database connection failed"), 500
+                    
+            with conn.cursor() as cursor:
+                cursor.execute("{CALL usp_GetUserVMs_backend(?)}", (user_id,))
+                user_vms = cursor.fetchall()
+
+            if not user_vms:
+                return jsonify({'success': False, 'message': 'User not found', 'user_id': user_id}), 404
+
+            vm_list = []
+            for vm in user_vms:
+                proxmox_vm_id, proxmox_vm_name = vm
+                vm_list.append({
+                    'proxmox_vm_id': proxmox_vm_id,
+                    'proxmox_vm_name': proxmox_vm_name
+                })
+            
+            return jsonify({'success': True, 'vms': vm_list})
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e), 'user_id': user_id}), 500
+
+    finally:
+        if conn:
+            conn.close()
+
+
 
 if __name__ == '__main__':
     start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

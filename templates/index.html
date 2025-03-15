@@ -19,7 +19,8 @@
                     document.getElementById('username-display').textContent = data.user.toLowerCase();
                     document.getElementById('loginContainer').classList.add('hidden');
                     document.getElementById('mainInterface').classList.remove('hidden');
-                    getUserProfileInfo()
+                    getUserProfileInfo();
+                    populateVMsDropDown();
                 }
             } catch (error) {
                 console.error('Session check error:', error);
@@ -504,10 +505,7 @@
       <div class="vm-selector">
         <h2>Select VM Console</h2>
         <select id="vmSelect">
-            <option value="">-- Choose a VM --</option>
-            <option value="104">VMSRVSQLW104 </option>
-            <option value="105">VMSRVSQLW105 </option>]
-            <option value="106">DEV CLIENT PC </option>
+            <option value="">-- Choose a VM --</option>    
         </select>
         <button onclick="connectToVM()">Connect</button>
         <div class="status" id="status"></div>
@@ -576,6 +574,7 @@
                     document.getElementById('loginContainer').classList.add('hidden');
                     document.getElementById('mainInterface').classList.remove('hidden');
                     getUserProfileInfo();
+                    populateVMsDropDown();
                 } else {
                     handleFailedAttempt(data.message || "Authentication failed");
                 }
@@ -861,6 +860,36 @@
                 userMenu.classList.remove('active');
             }
 });
+
+async function populateVMsDropDown() {
+    try {
+        const response = await fetch('/api/get-vms', { 
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        const data = await response.json();  // 
+
+        if (data.success) {
+            const select = document.getElementById("vmSelect");
+
+            select.innerHTML = '<option value="">-- Choose a VM --</option>';
+
+            data.vms.forEach(vm => {
+                let option = document.createElement("option");
+                option.value = vm.proxmox_vm_id;
+                option.textContent = vm.proxmox_vm_name;
+                select.appendChild(option);
+            });
+
+        } else {
+            console.error("Error:", data.message);
+        }
+    } catch (error) {
+        console.error("Fetch Error:", error);
+    }
+}
+
     </script>
 </body>
 </html>
