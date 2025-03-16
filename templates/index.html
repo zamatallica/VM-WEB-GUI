@@ -292,7 +292,7 @@
         .logout-btnimg {
             position: absolute;
             cursor: pointer;
-            top: 45px;
+            top: 10px;
             right: 44px;
             width: 33px; /* Adjust size */
             height: 33px;
@@ -305,6 +305,7 @@
             outline: 4px solid rgb(161, 161, 161,.3);
         }
         .logout-btntxt {
+            top: 12.5px;
             position: absolute;
             right: 85px;
             display: block;
@@ -315,13 +316,26 @@
         /* Wrapper for relative positioning */
         .user-menu-wrapper {
             display: inline-block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1.55%;
+            background-color:rgba(26, 26, 26);
+            border-bottom: 1px solid rgb(59, 59, 59);
+            color: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            padding: 15px;
+            font-size: 18px;
+            z-index: 1000; /* Ensures it stays above other elements */
         }
         /* Dropdown Menu */
         .user-dropdown {
             display: none; /*Initially hidden */
             position: absolute;
-            right: 68px;
-            top: 82px;
+            right: 60px;
+            top: 50px;
             background: #3a3a3a;
             border-radius: 8px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
