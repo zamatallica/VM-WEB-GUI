@@ -104,23 +104,34 @@ def handle_disconnect():
 
 #Retrieve the current public IP address.
 def get_current_public_ip():
+    """Function to retrieve public IP (implement your method here)"""
     try:
-        response = requests.get("http://myexternalip.com/raw")
-        response.raise_for_status()  # Raises an HTTPError for bad responses
-        app.logger.info(f"SUCCESS retrieving public IP: {response.text.strip()}")
-        return response.text.strip()
-    except requests.RequestException as e:
-        app.logger.info(f"Error retrieving public IP: {e} will swtich to .env")
+        import requests
+        response = requests.get('https://api64.ipify.org?format=json', timeout=5)
+        return response.json().get("ip")
+    except Exception as e:
+        logging.error(f"Failed to retrieve public IP: {e}")
         return None
-    
+
 # Retrieve the server's public IP address at startup   
 server_ip = get_current_public_ip()
 
 # If unable to retrieve the public IP, fall back to the environment variable
-if server_ip is None:
+if not server_ip:
     server_ip = os.getenv('ZAMATALLICA_SERVER_IP')
-    app.logger.info("Unable to determine the server's public IP. Please set the ZAMATALLICA_SERVER_IP environment variable.")
-    raise RuntimeError("Server IP configuration is missing.")
+    logging.warning("Unable to determine the server's public IP. Falling back to environment variable.")
+
+if not server_ip:
+    raise RuntimeError("Server IP configuration is missing. Please set the ZAMATALLICA_SERVER_IP environment variable.")
+
+def is_trusted_ip():
+    """ Allow unlimited requests from internal services (adjust as needed). """
+    trusted_ips = {"127.0.0.1", "localhost", "192.168.1.17"}  # Use a set for faster lookup
+    
+    if server_ip:  # Only add if server_ip is valid
+        trusted_ips.add(server_ip)
+
+    return get_remote_address() in trusted_ips
 
 # Rate limiter setup
 from flask_limiter import Limiter
@@ -129,7 +140,7 @@ from flask_limiter.util import get_remote_address
 limiter = Limiter(
     app=app,
     key_func=get_remote_address,
-    default_limits=["200 per day", "50 per hour"]
+    default_limits=["100000 per day", "5000 per hour"]
 )
 
 def get_db_connection():

@@ -9,8 +9,9 @@ import axios from 'axios';
 import https from 'https';
 import http from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
-import { securityHeaders, apiLimiter } from './security.js';
+import initializeRateLimiter, { securityHeaders } from './security.js';
 import { fileURLToPath } from 'url';
+import { uptime } from 'process';
 
 
 // Load custom CA certificate (if provided)
@@ -75,7 +76,9 @@ app.use(cors({
   credentials: true,
 }));
 app.use(securityHeaders);
-app.use('/api', apiLimiter);
+initializeRateLimiter().then(apiLimiter => {
+  app.use('/api', apiLimiter); // Apply rate limiter to all API routes
+});
 // Trust proxies (needed when using Nginx as a reverse proxy)
 app.set('trust proxy', 1); // The '1' means trust the first proxy
 
@@ -189,6 +192,57 @@ app.get('/api/proxmox/vnc-ticket', async (req, res) => {
       console.error('Proxy Error:', error.response?.data || error.message);
       res.status(500).json({
           error: 'Failed to get VNC ticket',
+          details: error.response?.data?.errors || error.message,
+      });
+  }
+});
+
+// VM Machine Info Endpoint
+app.get('/api/proxmox/vm-InfoPanel', async (req, res) => {
+  try {
+      // Validate the session by making a request to the Flask backend
+      const sessionValidation = await axios.get(`${process.env.FLASK_BACKEND_URL}/api/validate-session`, {
+          headers: {
+              Cookie: req.headers.cookie, // Pass the session cookie to Flask
+          },
+          withCredentials: true,
+      });
+
+      if (!sessionValidation.data.success) {
+          return res.status(401).json({ error: 'Unauthorized' });
+      }
+
+      const { vmId } = req.query;
+
+      if (!vmId || !/^\d+$/.test(vmId)) {
+          return res.status(400).json({ error: 'Invalid VM ID' });
+      }
+
+      const response = await axios.get(
+          `https://${process.env.PROXMOX_API_BASE}/nodes/${process.env.PROXMOX_NODE}/qemu/${vmId}/status/current`,
+          {
+              httpsAgent: agent,
+              headers: {
+                  Authorization: `PVEAPIToken=${process.env.PROXMOX_API_USER}!${process.env.PROXMOX_API_TOKEN}`,
+                  'Content-Type': 'application/json',
+              },
+          }
+      );
+
+      console.log('Proxmox VM data:', response.data.data);
+
+      res.json({
+          cpus: response.data.data.cpus || 0,
+          cpuusage: response.data.data.cpu || 0,
+          uptime: response.data.data.uptime || 0,
+          vmstatus: response.data.data.status || 'unknown',
+          memusage: response.data.data.mem || 0,
+          maxmem: response.data.data.maxmem || 0,
+      });
+  } catch (error) {
+      console.error('Proxy Error:', error.response?.data || error.message);
+      res.status(500).json({
+          error: 'Failed to get VM data.',
           details: error.response?.data?.errors || error.message,
       });
   }

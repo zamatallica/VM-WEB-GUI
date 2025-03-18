@@ -527,47 +527,43 @@
              /_______ (____  /__|_|  (____  /__| (____  /____/____/__|\___  >____  /    
             
         +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-        .vm-infobox-header {
+        .vm-infobox-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end; /* Ensures right alignment */
+            width:20%;
             position: absolute;
-            display:block;
             right: 10px;
-            height: 2.5%;
-            width: 21%;
             top: 5%;
+        }
+
+        .vm-infobox-header {
+            width: 90%; /* Inherit width from container */
             background-color: #ff7738b7;
-            background: #ff7738b7;
             border: 1px solid #ffffff69;
             color: #ffffff;
             font-family: Arial, Helvetica, sans-serif;
             font-size: small;
             text-align: center;
-            line-height: 33px; /* Centers text vertically */
-            box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.5); /* Adds a subtle shadow */
+            line-height: 5px;
+            box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.5);
+            padding: 10px;
         }
-        .vm-infobox-header-text {
-            position: absolute;
-            color: white;
-            left:1%;
-            font-weight: bold;
-            text-shadow: #888;
-        }
+
         .vm-infobox-content {
-            position: absolute;
-            right: 10px;
+            width:  90%; /* Inherit width from container */
             height: 22%;
-            width: 20.2%;
-            top: 7.60%;
             border: 1px solid #ffffff38;
             color: #929292c7;
             font-family: Arial, Helvetica, sans-serif;
             font-size: small;
             font-weight: bold;
-            text-align: left; /* Align text properly */
+            text-align: left;
             line-height: 33px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.7);
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px; /* Adds spacing between columns */
+            gap: 10px;
             padding: 10px;
         }
         .vm-infobox-content-text {
@@ -585,7 +581,6 @@
             color: rgba(255, 255, 255, 0.795);
             text-shadow: #ffffffb7;
             right: 0px;
-            padding-right: 2%;
         }
         .vm-infobox-content-data {
             position: relative;
@@ -618,6 +613,8 @@
             width: 16%;
             height: 100%;
             top:0;
+
+            transition: width 0.5s ease-in-out;
         }
         .vm-infobox-content-statusbar-MEM{
             position:absolute;
@@ -642,6 +639,7 @@
 </head>
 <body>
     <div class="vm-infoboxes-wrapper hidden" id="mainInterface_right">
+    <div class="vm-infobox-container">
         <div class="vm-infobox-header">
             <div class="vm-infobox-header-text">
                 VM MACHINE Info 
@@ -671,15 +669,15 @@
             </div>
             <div class="vm-infobox-content-text">
                 CPU Usage
-                <div class="vm-infobox-data-text">
+                <div class="vm-infobox-data-text"  id="vm-infobox-CPU-usage">
                     16% of 4 CPUs
                 </div>
-                <div class="vm-infobox-content-data-small">
-                    Uptime: 13 days 23:21:31
+                <div class="vm-infobox-content-data-small" >
                     <div  class="vm-infobox-content-statusbar">
                         <div  class="vm-infobox-content-statusbar-CPU">
                         </div>
                     </div>
+                    <div class="vm-infobox-content-data-small" id="vm-infobox-uptime">Uptime: 13 days 23:21:31</div>
                 </div>
             </div >
             <div class="vm-infobox-content-text">
@@ -688,14 +686,15 @@
                     67% (2.7GB/4GB)
                 </div>
                 <div class="vm-infobox-content-data-small">
-                    Curret usage: Average
                     <div  class="vm-infobox-content-statusbar">
                         <div  class="vm-infobox-content-statusbar-MEM">
                         </div>
                     </div>
+                    Current usage: Average
                 </div>
             </div>
         </div>
+    </div>
     </div>
     <!-- Login Screen -->
     <div class="login-container" id="loginContainer">
@@ -848,8 +847,11 @@
             resetLoginState();
         }
 
-        // Proxmox connection logic
-        let vncClient = null;
+    //Global Current VM connected
+    var currentVM = null;
+
+    // Proxmox connection logic
+    let vncClient = null;
 
  async function connectToVM() {
     const vmSelect = document.getElementById('vmSelect');
@@ -862,6 +864,9 @@
     }
 
     try {
+        //Set the Current connected VM
+         currentVM = vmId;
+
         // Get VNC ticket from backend
         const response = await fetch(`/api/proxmox/vnc-ticket?vmId=${vmId}`, {
             method: 'GET',
@@ -898,6 +903,9 @@
             wsProtocols: ['binary'], // Ensure binary protocol is used
         });
         console.log("Using VNC password as credentials:",data.password);
+
+        //Update VM Info Panel
+        populateVMInfoPanel(vmId)
 
         // Event listeners for VNC client
         vncClient.addEventListener('connect', () => {
@@ -1093,7 +1101,7 @@ async function populateVMsDropDown() {
             credentials: 'include'
         });
 
-        const data = await response.json();  // 
+        const data = await response.json();  
 
         if (data.success) {
             const select = document.getElementById("vmSelect");
@@ -1114,6 +1122,89 @@ async function populateVMsDropDown() {
         console.error("Fetch Error:", error);
     }
 }
+
+// Function to format uptime in days, hours, minutes, and seconds
+function formatUptime(seconds) {
+    const days = Math.floor(seconds / 86400); // 86400 seconds in a day
+    seconds %= 86400; // Get remaining seconds after removing days
+
+    const hours = Math.floor(seconds / 3600); // 3600 seconds in an hour
+    seconds %= 3600; // Get remaining seconds after removing hours
+
+    const minutes = Math.floor(seconds / 60); // 60 seconds in a minute
+    seconds %= 60; // Remaining seconds
+
+    return `${days} Days, ${hours} Hours, ${minutes} Minutes, ${seconds} Seconds`;
+}
+
+
+async function populateVMInfoPanel(vmId) {
+    if (!vmId) {
+        console.error("VM ID is missing!");
+        return;
+    }
+
+    try {
+        // Fetch VM info from backend
+        const response = await fetch(`/api/proxmox/vm-InfoPanel?vmId=${vmId}`, {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Check if API response contains the expected keys
+        if (data.vmstatus) {
+            const formattedUptime = formatUptime(data.uptime);
+            const cpuUsagePercent = Math.min(Math.max(data.cpuusage * 100, 0), 100); // Ensure 0-100 range
+            const cpuUsagePercentText = `${Math.round(Math.min(Math.max(data.cpuusage * 100, 0), 100))}`;
+
+
+            // Update UI elements with correct data
+            document.getElementById('vm-infobox-uptime').textContent = `Uptime: ${formattedUptime}`;
+            document.querySelector('.vm-infobox-content-statusbar-CPU').style.width = `${cpuUsagePercent}%`;
+            document.getElementById('vm-infobox-CPU-usage').textContent = `${cpuUsagePercentText}% of ${data.cpus} CPUs`;
+           // document.getElementById('vm-infobox-vmstatus').textContent = `Status: ${data.vmstatus}`;
+           // document.getElementById('vm-infobox-memusage').textContent = `Memory Usage: ${data.memusage} / ${data.maxmem}`;
+        } else {
+            console.error("Invalid response from API:", data);
+        }
+    } catch (error) {
+        console.error("Fetch Error:", error);
+    }
+}
+
+// Function to start auto-refreshing the VM info panel
+function startAutoUpdate(vmId) {
+    if (!vmId) {
+        //nothing to do
+        return;
+    }
+
+    // Immediately update UI once, then refresh every 3 seconds
+    populateVMInfoPanel(vmId);
+    setInterval(() => populateVMInfoPanel(vmId), 5000);
+}
+
+// Get the selected VM ID and start the auto-update process
+document.addEventListener("DOMContentLoaded", function () {
+    const vmSelect = document.getElementById("vmSelect");
+    
+    if (vmSelect) {
+        // Listen for VM selection change
+        vmSelect.addEventListener("change", function () {
+            const vmId = vmSelect.value;
+            startAutoUpdate(vmId);
+        });
+
+        // Start auto-update with the initially selected VM
+        startAutoUpdate(vmSelect.value);
+    }
+});
 
     </script>
 </body>
