@@ -218,7 +218,8 @@ app.get('/api/proxmox/vm-InfoPanel', async (req, res) => {
           return res.status(400).json({ error: 'Invalid VM ID' });
       }
 
-      const response = await axios.get(
+      // Fetch VM status data
+      const statusResponse = await axios.get(
           `https://${process.env.PROXMOX_API_BASE}/nodes/${process.env.PROXMOX_NODE}/qemu/${vmId}/status/current`,
           {
               httpsAgent: agent,
@@ -229,16 +230,131 @@ app.get('/api/proxmox/vm-InfoPanel', async (req, res) => {
           }
       );
 
-      console.log('Proxmox VM data:', response.data.data);
+      //console.log('Proxmox VM data:', statusResponse.data.data);
 
+      // Fetch OS information
+      let osInfo = "unknown";
+      let vmHostname = "unknown";
+      let vmIPaddress = "0.0.0.0";
+
+      try {
+        console.log(" Fetching OS info for VM ID:", vmId);
+    
+        const osResponse = await axios.get(
+            `https://${process.env.PROXMOX_API_BASE}/nodes/${process.env.PROXMOX_NODE}/qemu/${vmId}/agent/get-osinfo`,
+            {
+                httpsAgent: agent,
+                headers: {
+                    Authorization: `PVEAPIToken=${process.env.PROXMOX_API_USER}!${process.env.PROXMOX_API_TOKEN}`,
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+
+        const osData = osResponse.data.data.result;
+        osInfo =  osData["version"] || osData["pretty-name"] || osData["name"] || "unknown";
+
+        console.log(" API Os Info Request Succeeded!");
+
+      } catch (osError) {
+        console.error("OS info retrieval failed!");
+        console.error("Error Details:", osError.response?.data || osError.message);
+      }
+
+        //fech HOSTNAME
+       try {
+         console.log(" Fetching  Host for VM ID:", vmId);
+     
+         const getHostResponse = await axios.get(
+             `https://${process.env.PROXMOX_API_BASE}/nodes/${process.env.PROXMOX_NODE}/qemu/${vmId}/agent/get-host-name`,
+             {
+                 httpsAgent: agent,
+                 headers: {
+                     Authorization: `PVEAPIToken=${process.env.PROXMOX_API_USER}!${process.env.PROXMOX_API_TOKEN}`,
+                     'Content-Type': 'application/json',
+                 },
+             }
+         );
+ 
+         const  hostnameData = getHostResponse.data.data.result;
+         vmHostname =  hostnameData["host-name"] || "unknown";
+    
+        console.log(" API Hostname Request Succeeded!");
+    
+      
+      } catch (osError) {
+          console.error("Hostname retrieval failed!");
+          console.error("Error Details:", osError.response?.data || osError.message);
+      }
+
+      //Fetch VM IP
+      try {
+        console.log(" Fetching  VM IP for VM ID:", vmId);
+    
+        const getIPadressResponse = await axios.get(
+            `https://${process.env.PROXMOX_API_BASE}/nodes/${process.env.PROXMOX_NODE}/qemu/${vmId}/agent/network-get-interfaces`,
+            {
+                httpsAgent: agent,
+                headers: {
+                    Authorization: `PVEAPIToken=${process.env.PROXMOX_API_USER}!${process.env.PROXMOX_API_TOKEN}`,
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+
+        const  interfaces = getIPadressResponse.data.data.result;
+
+        // Loop through interfaces and find the first valid IPv4 address from "Ethernet" or fallback
+        for (const iface of interfaces) {
+          if (iface["ip-addresses"]) {
+              for (const ipInfo of iface["ip-addresses"]) {
+                  //Prefer the "Ethernet" interface
+                  if (iface["name"] === "Ethernet" && ipInfo["ip-address-type"] === "ipv4") {
+                      vmIPaddress = ipInfo["ip-address"];
+                      console.log("Selected IP from Ethernet:", vmIPaddress);
+                      break; // Stop searching after finding an IPv4 address
+                  }
+              }
+          }
+        }
+
+        // If no IP was found from "Ethernet", fallback to any available IPv4
+        if (vmIPaddress === "0.0.0.0") {
+          for (const iface of interfaces) {
+              if (iface["ip-addresses"]) {
+                  for (const ipInfo of iface["ip-addresses"]) {
+                      if (ipInfo["ip-address-type"] === "ipv4") {
+                          vmIPaddress = ipInfo["ip-address"];
+                          console.log("No Ethernet interface found, using fallback IP:", vmIPaddress);
+                          break;
+                      }
+                  }
+              }
+          }
+        }
+
+      console.log("API IP Request Succeeded! IP:", vmIPaddress);
+    
+     } catch (osError) {
+         console.error("IP retrieval failed!");
+         console.error("Error Details:", osError.response?.data || osError.message);
+     }
+
+
+      //Send a single JSON response with all data
       res.json({
-          cpus: response.data.data.cpus || 0,
-          cpuusage: response.data.data.cpu || 0,
-          uptime: response.data.data.uptime || 0,
-          vmstatus: response.data.data.status || 'unknown',
-          memusage: response.data.data.mem || 0,
-          maxmem: response.data.data.maxmem || 0,
+          cpus: statusResponse.data.data.cpus || 0,
+          cpuusage: statusResponse.data.data.cpu || 0,
+          uptime: statusResponse.data.data.uptime || 0,
+          vmstatus: statusResponse.data.data.status || 'unknown',
+          memusage: statusResponse.data.data.mem || 0,
+          maxmem: statusResponse.data.data.maxmem || 0,
+          name: statusResponse.data.data.name || 'unknown',
+          os: osInfo, // Include OS info in the same response
+          hostname: vmHostname,
+          ipv4: vmIPaddress,
       });
+
   } catch (error) {
       console.error('Proxy Error:', error.response?.data || error.message);
       res.status(500).json({
@@ -247,6 +363,7 @@ app.get('/api/proxmox/vm-InfoPanel', async (req, res) => {
       });
   }
 });
+
 
 // Start the server only after verifying Proxmox connection
 const PORT = process.env.PROXY_PORT || 3001;

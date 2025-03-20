@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Secure Proxmox Access</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module">
         import RFB from 'https://cdn.jsdelivr.net/npm/@novnc/novnc@1.3.0/core/rfb.js';
         window.RFB = RFB;  // Expose RFB globally
@@ -126,9 +127,10 @@
 
         .container {
             max-width: 2440px;
-            width: 1920px;
+            width: 75.5%;
             margin: 0 auto;
             left: 0;
+            top: 0;
             position: absolute;
         }
 
@@ -170,8 +172,9 @@
             background: #000;
             border-radius: 8px;
             overflow: hidden;
+            top:0;
             height: 1080px;
-            width: 1920px;
+            width: 100%;
 
         }
 
@@ -485,6 +488,7 @@
                 box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.5);
             }
         }
+        
 
         /* Glowing green when connected */
         .connected {
@@ -531,7 +535,7 @@
             display: flex;
             flex-direction: column;
             align-items: flex-end; /* Ensures right alignment */
-            width:20%;
+            width:22%;
             position: absolute;
             right: 10px;
             top: 5%;
@@ -581,6 +585,7 @@
             color: rgba(255, 255, 255, 0.795);
             text-shadow: #ffffffb7;
             right: 0px;
+            top: 0;
         }
         .vm-infobox-content-data {
             position: relative;
@@ -610,7 +615,7 @@
             display:block;
             background-color: #ff7738b7;
             background: #ff7738b7;
-            width: 16%;
+            width: 0%;
             height: 100%;
             top:0;
 
@@ -621,7 +626,7 @@
             display:block;
             background-color: #ff7738b7;
             background: #ff7738b7;
-            width: 67%;
+            width: 0%;
             height: 100%;
             top:0;
         }
@@ -631,7 +636,7 @@
             width: 70px; /* Adjust size */
             height: 70px;
             top:0;
-            padding-top: 5%;
+            padding-top: 25%;
             padding-left: 35%;
             opacity: 30%;
         }
@@ -641,56 +646,59 @@
     <div class="vm-infoboxes-wrapper hidden" id="mainInterface_right">
     <div class="vm-infobox-container">
         <div class="vm-infobox-header">
-            <div class="vm-infobox-header-text">
-                VM MACHINE Info 
+            <div class="vm-infobox-header-text" id="vm-infobox-header-text">
+               <!-- VM Machine Info-->
             </div>
         </div>
         <div class="vm-infobox-content">
             <div class="vm-infobox-content-text">
                 Status
-                <div class="vm-infobox-data-text">
-                    running
+                <div class="vm-infobox-data-text" id="vm-infobox-vmstatus">
+                <!-- runnig -->
                 </div>
-                <div class="vm-infobox-content-data-small">
-                    OS: Windows 11
+                <div class="vm-infobox-content-data-small" id="vm-infobox-OSname">
+                    OS: 
                 </div>
                 <div class="vm-infobox-content-data-text">
-                    <img   class="vm-infobox-content-data-icon" src="{{ url_for('static', filename='images/Win_key_white.png') }}">
+                    <img id="vm-infobox-OS-icon" class="vm-infobox-content-data-icon" src="{{ url_for('static', filename='images/os_default.png') }}">
                 </div>
             </div>
             <div class="vm-infobox-content-text">
                 IP Address
-                <div class="vm-infobox-data-text">
-                    192.168.1.19
+                <div id="vm-infobox-Ipaddress"class="vm-infobox-data-text">
                 </div>
-                <div class="vm-infobox-content-data-small">
-                    Hostname: VMSRVSQLW104
+                <div id="vm-infobox-vmhostname" class="vm-infobox-content-data-small">
+                    Hostname: 
+                </div>
+                <div class="vm-infobox-content-text">
+                    <div class="cpu-graph-container">
+                        <canvas id="cpuUsageChart"></canvas>
+                    </div>
                 </div>
             </div>
             <div class="vm-infobox-content-text">
                 CPU Usage
                 <div class="vm-infobox-data-text"  id="vm-infobox-CPU-usage">
-                    16% of 4 CPUs
+                    <!--16% of 4 CPUs-->
                 </div>
                 <div class="vm-infobox-content-data-small" >
                     <div  class="vm-infobox-content-statusbar">
                         <div  class="vm-infobox-content-statusbar-CPU">
                         </div>
                     </div>
-                    <div class="vm-infobox-content-data-small" id="vm-infobox-uptime">Uptime: 13 days 23:21:31</div>
+                    <div id="vm-infobox-uptime"><!--1Uptime: 13 days 23:21:31--></div>
                 </div>
             </div >
             <div class="vm-infobox-content-text">
                 Memory Usage
-                <div class="vm-infobox-data-text">
-                    67% (2.7GB/4GB)
+                <div class="vm-infobox-data-text"  id="vm-infobox-MEM-usage">
+                    <!--67% (2.7GB/4GB)-->
                 </div>
                 <div class="vm-infobox-content-data-small">
                     <div  class="vm-infobox-content-statusbar">
                         <div  class="vm-infobox-content-statusbar-MEM">
                         </div>
                     </div>
-                    Current usage: Average
                 </div>
             </div>
         </div>
@@ -729,7 +737,7 @@
         <select id="vmSelect">
             <option value="">-- Choose a VM --</option>    
         </select>
-        <button onclick="connectToVM()">Connect</button>
+        <button id="vmBtnSelect" onclick="connectToVM()">Connect</button>
         <div class="status" id="status"></div>
     </div>
     <div id="vnc-container">
@@ -865,7 +873,7 @@
 
     try {
         //Set the Current connected VM
-         currentVM = vmId;
+        currentVM = vmId;
 
         // Get VNC ticket from backend
         const response = await fetch(`/api/proxmox/vnc-ticket?vmId=${vmId}`, {
@@ -903,9 +911,6 @@
             wsProtocols: ['binary'], // Ensure binary protocol is used
         });
         console.log("Using VNC password as credentials:",data.password);
-
-        //Update VM Info Panel
-        populateVMInfoPanel(vmId)
 
         // Event listeners for VNC client
         vncClient.addEventListener('connect', () => {
@@ -1023,6 +1028,7 @@
                 if (vncClient) {
                     vncClient.disconnect();
                     vncClient = null;
+                    var currentVM = null;
                     vncContainer.classList.remove("connected", "bad-disconnect","disconnecting");
                     status.textContent = ""
                 }
@@ -1134,13 +1140,65 @@ function formatUptime(seconds) {
     const minutes = Math.floor(seconds / 60); // 60 seconds in a minute
     seconds %= 60; // Remaining seconds
 
-    return `${days} Days, ${hours} Hours, ${minutes} Minutes, ${seconds} Seconds`;
+    return `${days} Days ${hours}:${minutes}:${seconds}`;
 }
 
+//CPU Graph Initialize
+// Store the Chart instance globally to avoid re-creating it
+let cpuChart;
+let cpuData = {
+    labels: Array(20).fill(""), // 20 empty slots
+    datasets: [{
+        label: "CPU Usage (%)",
+        borderColor: "rgb(243, 130, 37)",
+        backgroundColor: "rgb(229, 137, 9,.2)",
+        borderWidth: 1,
+        fill: true,
+        tension: 0.3, // Makes the line smooth
+        pointRadius: 0, // No dots on the graph
+        pointHoverRadius: 0, // No dots on hover
+        data: Array(20).fill(0) // Initial data
+    }]
+};
+
+
+
+// Ensure the chart is created **only once**
+function createCpuChart() {
+    let canvas = document.getElementById("cpuUsageChart");
+    if (!canvas) {
+        console.error("Canvas element not found!");
+        return;
+    }
+
+    let ctx = canvas.getContext("2d");
+
+    if (!cpuChart) { // **Create chart only if it doesn't exist**
+        cpuChart = new Chart(ctx, {
+            type: "line",
+            data: cpuData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 100 }, // Smooth animation
+                scales: {
+                    x: { display: false },
+                    y: { beginAtZero: true, 
+                        max: 100,
+                        grid: {
+                        color: "rgba(255, 255, 255, 0.1)", // Change Y-axis grid color
+                        borderColor: "rgba(255, 255, 255, 0.5)" // Border line color
+                        }
+                     }
+                }
+            }
+        });
+    }
+}
 
 async function populateVMInfoPanel(vmId) {
     if (!vmId) {
-        console.error("VM ID is missing!");
+        //nothing to do
         return;
     }
 
@@ -1159,17 +1217,62 @@ async function populateVMInfoPanel(vmId) {
 
         // Check if API response contains the expected keys
         if (data.vmstatus) {
+            const bytetoGB = 0.000000000931322574615478515625
             const formattedUptime = formatUptime(data.uptime);
             const cpuUsagePercent = Math.min(Math.max(data.cpuusage * 100, 0), 100); // Ensure 0-100 range
-            const cpuUsagePercentText = `${Math.round(Math.min(Math.max(data.cpuusage * 100, 0), 100))}`;
+            const memUsagePercent = Math.min(Math.max((data.memusage/data.maxmem) * 100, 0), 100); // Ensure 0-100 range
+            const cpuUsagePercentText  = `${Math.round(cpuUsagePercent)}`;
+        
 
-
-            // Update UI elements with correct data
+            // Update UI elements 
             document.getElementById('vm-infobox-uptime').textContent = `Uptime: ${formattedUptime}`;
             document.querySelector('.vm-infobox-content-statusbar-CPU').style.width = `${cpuUsagePercent}%`;
             document.getElementById('vm-infobox-CPU-usage').textContent = `${cpuUsagePercentText}% of ${data.cpus} CPUs`;
-           // document.getElementById('vm-infobox-vmstatus').textContent = `Status: ${data.vmstatus}`;
-           // document.getElementById('vm-infobox-memusage').textContent = `Memory Usage: ${data.memusage} / ${data.maxmem}`;
+            document.getElementById('vm-infobox-OSname').textContent = `OS: ${data.os}`;
+            document.getElementById('vm-infobox-header-text').textContent = `${data.name}`;
+            document.getElementById('vm-infobox-vmstatus').textContent = `${data.vmstatus}`;
+            document.getElementById('vm-infobox-MEM-usage').textContent = `${Math.round(memUsagePercent)}% (${ (data.memusage * bytetoGB).toFixed(2) }GB/${ Math.round(data.maxmem * bytetoGB) }GB)`;
+            document.querySelector('.vm-infobox-content-statusbar-MEM').style.width = `${memUsagePercent}%`;
+            document.getElementById('vm-infobox-Ipaddress').textContent = `${data.ipv4}`;
+            document.getElementById('vm-infobox-vmhostname').textContent = `Hostname: ${data.hostname}`;
+
+            // Ensure CPU chart is initialize
+            if (!cpuChart) {
+                createCpuChart();
+            }
+
+            // Update CPU graph 
+            if (cpuChart) {
+                cpuChart.data.datasets[0].data.push(cpuUsagePercent);
+                cpuChart.data.labels.push(""); // Maintain label count
+
+                // Limit data points to 20 
+                if (cpuChart.data.datasets[0].data.length > 20) {
+                    cpuChart.data.datasets[0].data.shift(); // Remove oldest
+                    cpuChart.data.labels.shift();
+                }
+
+                cpuChart.update(); // Refresh 
+            }
+            
+            let whatOS = data.os.toLowerCase();
+            let fpath = document.getElementById('vm-infobox-OS-icon').src || "/static/images/os_default.png";
+            let rpath = fpath.split("/").pop();
+            let osIcon = "/static/images/os_default.png";
+            //Display Icon according to the vm OS, kinda.
+            if (whatOS.search("windows") >= 0){
+                osIcon="/static/images/os_windows.png";
+            }else if (whatOS.toLowerCase().search("linux") >= 0){
+                osIcon="/static/images/os_linux.png";
+            }else if (whatOS.toLowerCase().search("mac") >= 0){
+                osIcon="/static/images/os_mac.png";
+            }
+            //We dont want to keep refreshin the Icon unlike the data.
+            if(rpath != osIcon.split("/").pop()){
+                document.getElementById('vm-infobox-OS-icon').src= osIcon;
+                console.log(osIcon.split("/").pop());            
+            }
+        
         } else {
             console.error("Invalid response from API:", data);
         }
@@ -1178,34 +1281,47 @@ async function populateVMInfoPanel(vmId) {
     }
 }
 
+let updateInterval = null; // Store the interval ID
+
 // Function to start auto-refreshing the VM info panel
-function startAutoUpdate(vmId) {
-    if (!vmId) {
-        //nothing to do
+function startAutoUpdate(currentVM) {
+    if (!currentVM) {
+        console.error("No VM selected, stopping auto-update.");
         return;
     }
 
-    // Immediately update UI once, then refresh every 3 seconds
-    populateVMInfoPanel(vmId);
-    setInterval(() => populateVMInfoPanel(vmId), 5000);
+    // Stop any previous interval before starting a new one
+    if (updateInterval) {
+        clearInterval(updateInterval);
+    }
+
+    // Ensure CPU chart is initialized
+    if (!cpuChart) {
+        createCpuChart();
+    }
+
+
+    // Immediately update UI once, then refresh every 1 seconds
+    populateVMInfoPanel(currentVM);
+    updateInterval = setInterval(() => populateVMInfoPanel(currentVM), 1000);
 }
 
 // Get the selected VM ID and start the auto-update process
 document.addEventListener("DOMContentLoaded", function () {
+    const vmSelectBtn = document.getElementById("vmBtnSelect");
     const vmSelect = document.getElementById("vmSelect");
-    
-    if (vmSelect) {
+
+    if (vmSelect && vmSelectBtn) {
         // Listen for VM selection change
-        vmSelect.addEventListener("change", function () {
-            const vmId = vmSelect.value;
-            startAutoUpdate(vmId);
+        vmSelectBtn.addEventListener("click", function () {
+            const selectedVM = vmSelect.value;
+            startAutoUpdate(selectedVM);
         });
 
         // Start auto-update with the initially selected VM
         startAutoUpdate(vmSelect.value);
     }
 });
-
     </script>
 </body>
 </html>
