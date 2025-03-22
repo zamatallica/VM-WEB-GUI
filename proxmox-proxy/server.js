@@ -252,7 +252,7 @@ app.get('/api/proxmox/vm-InfoPanel', async (req, res) => {
         );
 
         const osData = osResponse.data.data.result;
-        osInfo =  osData["version"] || osData["pretty-name"] || osData["name"] || "unknown";
+        osInfo =   osData["name"] || osData["pretty-name"] ||  osData["version"] || "unknown";
 
         console.log(" API Os Info Request Succeeded!");
 

@@ -1,0 +1,660 @@
+/* =====================================================================================
+   File: styles.css
+   Author: Alejandro Escobedo
+   Verion: 
+                3/22/2025 Initial Created module css for main web gui interface.
+   -------------------------------------------------------------------
+   Core styling for the Proxmox WebGUI interface.
+   This file handles:
+   - Layout and responsive positioning
+   - UI element styles (buttons, dropdowns, modals, charts)
+   - Visual theme (dark mode, coloring, animations)
+   - Sidebar, VNC panel, and info panel visuals
+====================================================================================== */
+
+:root {
+    --bg-color: #1a1a1a;
+    --card-bg: #2d2d2d;
+    --primary: #007bff;
+    --text: #fff;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: var(--bg-color);
+    color: var(--text);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.login-container, .container {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #4d4d4d;
+    border-radius: 4px;
+    background: #3d3d3d;
+    color: var(--text);
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+.error {
+    color: #ff4444;
+    margin-top: 10px;
+}
+
+.container {
+    max-width: 2440px;
+    width: 75.5%;
+    margin: 0 auto;
+    left: 0;
+    top: 0;
+    position: absolute;
+}
+
+.vm-selector {
+    background: #2d2d2d;
+    border-radius: 1px;
+    margin-bottom: 20px;
+    left: 0%;
+    width: 100%;
+    position:relative;
+}
+
+select {
+    padding: 10px;
+    border-radius: 4px;
+    background: #3d3d3d;
+    color: #fff;
+    border: 1px solid #4d4d4d;
+    width: 300px;
+    margin-right: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    background: #ff7738b7;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+    width: 200px;
+}
+
+button:hover {
+    background: rgba(255, 255, 255, 0.1)
+}
+
+#vnc-container {
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    top:0;
+    height: 1080px;
+    width: 100%;
+
+}
+
+.status {
+    position: absolute;
+    bottom: -18px;
+    left: 10px; /* Adjust positioning */
+    width: 240px;
+    height: 33px;
+    background: #ff7738b7;
+    border: 1px solid #ffffff69;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+    text-align: center;
+    line-height: 33px; /* Centers text vertically */
+    box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.5); /* Adds a subtle shadow */
+}
+
+/* Logout User */
+.logout-btn {
+    position: absolute;
+    background: transparent;
+    color: rgb(255, 255, 255);
+    right: 10px;
+    font-size: 14px;
+    font-weight: 100;
+    padding: 8px;
+    border: 1px solid white; /* Outlined border */
+    border-radius: 8px; /* Rounded edges */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: right;
+    align-items: center;
+    gap: 8px;
+    outline: none;
+    width: auto; 
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.logo-placeholder {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 33px; /* Adjust size */
+    height: 33px;
+    display: block;
+    opacity: 0.8;
+}
+
+.logo-placeholder-text{
+    position: absolute;
+    top: 15px;
+    left: 55px;
+    height: 50px;
+    display: block;
+    opacity: 0.5;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif, sans-serif;
+    font-weight: bold;
+    white-space: nowrap; /* Prevents text from wrapping */
+}
+
+
+/* Hover Effect */
+.logout-btn:hover {
+    background: rgb(255, 255, 255,.05);
+    color: rgb(255, 255, 255);
+}
+
+/* Active (Click) Effect */
+.logout-btn:active {
+    opacity: 0.8;
+}
+/* Change icon color on hover */
+.logout-btn:hover svg {
+    fill: black;
+}
+/* Icon inside the button */
+.logout-btnimg {
+    position: absolute;
+    cursor: pointer;
+    top: 10px;
+    right: 44px;
+    width: 33px; /* Adjust size */
+    height: 33px;
+    display: block;
+    border-radius: 50%; 
+    transition: outline 0.2s ease-in-out;
+}
+/* Hover Effect */
+.logout-btnimg:hover {
+    outline: 4px solid rgba(255, 136, 1, 0.397);
+}
+.logout-btntxt {
+    top: 12.5px;
+    position: absolute;
+    right: 85px;
+    display: block;
+    font-weight: 100;
+    color: rgb(218, 217, 217);
+    text-shadow: #888;
+}
+/* Wrapper for relative positioning */
+.user-menu-wrapper {
+    display: inline-block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1.55%;
+    background-color:rgba(26, 26, 26);
+    border-bottom: 1px solid rgba(255, 136, 1, 0.397);
+    color: white;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    padding: 15px;
+    font-size: 18px;
+    z-index: 1000; /* Ensures it stays above other elements */
+}
+/* Dropdown Menu */
+.user-dropdown {
+    display: none; /*Initially hidden */
+    position: absolute;
+    right: 60px;
+    top: 50px;
+    background: #3a3a3a;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    width: 220px;
+    padding: 10px;
+    height: 50px;
+    z-index: 1000;
+}
+/* Show Dropdown */
+.user-menu-wrapper.active .user-dropdown {
+    display: block;
+}
+/* Dropdown Items */
+.user-dropdown button {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 14px;
+    text-align: left;
+    width: 91.5%;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+    
+}
+/* Hover Effect */
+.user-dropdown button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+/* Divider */
+.logout-div {
+    width: 98%;
+    border-bottom: .1px;
+    background-color: rgba(56, 54, 54, 0.3);
+    margin: 6px 0;
+}
+/* Logout Icon */
+.logout-btn img {
+    position: relative;
+    top: 4px;
+    width: 16px;
+    height: 16px;
+    margin-right: 6px; /* Space between icon and text */
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+/* Sidebar */
+#vnc-sidebar {
+    position: absolute;
+    left: -240px; /* Initially hidden */
+    top: 250px;
+    width: 220px;
+    height: 445px;
+    background-color: rgba(30, 30, 30, 0.7);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    transition: left 0.3s ease-in-out;
+    padding: 5px;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-top-right-radius: 15px;  /* Top-right rounded */
+    border-bottom-right-radius: 15px; /* Bottom-right rounded */
+    overflow: hidden; /* Ensures inner elements don't overflow the rounded corners */
+}
+
+/* Sidebar Buttons */
+.sidebar-btn {
+    display: block;
+    width: 98%;
+    padding: 20px;
+    margin: 5px 0;
+    background:transparent;
+    border: none;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.2s;
+}
+
+.key-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    gap: 10px;
+    padding: 10px;
+    justify-content: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Sidebar Buttons */
+.sidebar-key {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    width: 60px;
+    height: 50px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Icon inside the button */
+.sidebar-icons {
+    position: absolute;
+    width: 17px; /* Adjust size */
+    height: 17px;
+    display: left;
+    transition: outline 0.2s ease-in-out;
+}
+
+.sidebarKey-icons {
+    position: absolute;
+    width: 27px; /* Adjust size */
+    height: 27px;
+    display: left;
+    transition: outline 0.2s ease-in-out;
+}
+/* Sidebar Toggle Button (Round) */
+#sidebar-toggle {
+    position: absolute;
+    padding: 0; /* Remove extra padding */
+    top: 400px;
+    left: 0; /* Ensure it's at the edge */
+    background-color: rgba(30, 30, 30, 0.7);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    color: white;
+    width: 20px; /* Make it slim */
+    height: 80px; /* Adjust height to be more tab-like */
+    border: none;
+    cursor: pointer;
+    border-radius: 0px 5px 5px 0px; /* Rounded edge on the right */
+    font-size: 12px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.2s ease-in-out, left 0.3s ease-in-out;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Hover Effect */
+#sidebar-toggle:hover {
+    background-color: #ff7738b7;
+    transform: scale(1.1);
+}
+
+/* Show Sidebar */
+.sidebar-open #vnc-sidebar {
+    left: 0;
+}
+
+.sidebar-open #sidebar-toggle {
+    left: calc(220px + 10px); /* Sidebar width + 10px */
+}
+
+@keyframes pulse-glow {
+    0% {
+        box-shadow: 0px 0px 10px rgba(0, 255, 0, 0.5);
+    }
+    50% {
+        box-shadow: 0px 0px 20px rgba(0, 255, 0, 0.8);
+    }
+    100% {
+        box-shadow: 0px 0px 10px rgba(0, 255, 0, 0.5);
+    }
+}
+
+@keyframes pulse-red {
+    0% {
+        box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.5);
+    }
+    50% {
+        box-shadow: 0px 0px 20px rgba(255, 0, 0, 0.8);
+    }
+    100% {
+        box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.5);
+    }
+}
+
+
+/* Glowing green when connected */
+.connected {
+    border: 3px solid green;
+    border-radius: 10px;
+    overflow: hidden;
+    animation: pulse-glow 1.5s infinite alternate;
+    transition: border-color 1s ease-in-out, box-shadow 1s ease-in-out;
+}
+
+/* Smooth transition to grey on normal disconnect */
+.disconnecting {
+    border: 3px solid grey;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 0px 10px rgba(128, 128, 128, 0.5); /* Static grey shadow */
+    animation: none; /* Stop the pulse animation */
+    transition: border-color 1s ease-in-out, box-shadow 1s ease-in-out;
+}
+
+/* Pulsing red on bad disconnect */
+.bad-disconnect {
+    border: 3px solid red;
+    border-radius: 10px;
+    overflow: hidden;
+    animation: pulse-red 1.2s infinite alternate;
+    transition: border-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+}
+/* ================================  CRACK THE WORLD =========================================================================
+_________            .___         .___  _______/\  ________                .__                         .___ ___.           
+\_   ___ \  ____   __| _/____   __| _/  \      )/  \______ \   ____   _____|__| ____   ____   ____   __| _/ \_ |__ ___.__. 
+/    \  \/ /  _ \ / __ |/ __ \ / __ |   /   |   \   |    |  \_/ __ \ /  ___/  |/ ___\ /    \_/ __ \ / __ |   | __ <   |  | 
+\     \___(  <_> ) /_/ \  ___// /_/ |  /    |    \  |    `   \  ___/ \___ \|  / /_/  >   |  \  ___// /_/ |   | \_\ \___  | 
+ \______  /\____/\____ |\___  >____ |  \____|__  / /_______  /\___  >____  >__\___  /|___|  /\___  >____ |   |___  / ____| 
+        \/            \/    \/     \/          \/          \/     \/     \/  /_____/      \/     \/     \/       \/\/                                                                                                               
+     __________                      __         .__  .__  .__                                                                 
+     \____    /____    _____ _____ _/  |______  |  | |  | |__| ____ _____                                                     
+       /     /\__  \  /     \\__  \\   __\__  \ |  | |  | |  |/ ___\\__  \                                                    
+      /     /_ / __ \|  Y Y  \/ __ \|  |  / __ \|  |_|  |_|  \  \___ / __ \_                                                  
+     /_______ (____  /__|_|  (____  /__| (____  /____/____/__|\___  >____  /    
+    
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+.vm-infobox-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Ensures right alignment */
+    width:22%;
+    position: absolute;
+    right: 10px;
+    top: 5%;
+}
+
+.vm-infobox-header {
+    width: 90%; /* Inherit width from container */
+    background-color: #ff7738b7;
+    border: 1px solid #ffffff69;
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+    text-align: center;
+    line-height: 5px;
+    box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 3px;
+}
+
+#vm-infobox-toggle{
+    display:none;
+}
+.vm-infobox-head{
+    display:block;
+    width:95%;
+    top:0;
+    right:0;
+    height:fit-content;
+    box-sizing: border-box;
+    position:absolute;
+    cursor: pointer;
+    padding: 10px;
+}
+.vm-infobox-head:after{
+    position: absolute;
+    content:"keyboard_arrow_down";
+    font-family: "Material Icons";
+    top: 38%;
+    opacity: 80%;
+    right:10px;
+    font-size: 20px;
+    transition: all 0.3s ease;
+}
+
+.vm-infobox-header input:checked + .vm-infobox-head:after{
+    transform: rotate(-90deg);
+}
+
+.vm-infobox-content {
+    width:  90%; /* Inherit width from container */
+    height: -100%;
+    border: 1px solid #ffffff2a;
+    color: #929292c7;
+    background: linear-gradient(to bottom, #2b2b2bcb, #1d1c1c);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+    font-weight: bold;
+    text-align: left;
+    line-height: 33px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.7);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    position: absolute;
+    top:30px;
+    border-radius: 5px;
+    right:0;
+}
+
+.vm-infobox-header input:checked ~.vm-infobox-content{
+    max-height: 0px;
+    opacity: 1;
+    top:23px;
+}
+
+.vm-infobox-content-text {
+    position: relative;
+    display: inline-block;
+    padding-top: 5px;
+    font-weight: bold;
+    text-shadow: #888;
+}
+.vm-infobox-data-text{
+    position: absolute;
+    display: inline-block;
+    padding-top: 5px;
+    font-weight:lighter;
+    color: rgba(255, 255, 255, 0.795);
+    text-shadow: #ffffffb7;
+    right: 0px;
+    top: 0;
+}
+.vm-infobox-content-data {
+    position: relative;
+    padding-top: 5px;
+    font-weight: bold;
+    text-shadow: #888;
+    border-top: 1px solid #ffffff38;
+}
+.vm-infobox-content-data-small {
+    position: relative;
+    padding-top: 5px;
+    font-weight: lighter;
+    font-size: smaller;
+    font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif ;
+    text-shadow: #888;
+    color: #ffffffb4;
+    border-top: 1px solid #ffffff38;
+}
+.vm-infobox-content-statusbar{
+    position: relative;
+    padding-top: 5px;
+    font-weight: bold;
+    border: 1px solid #ffffff48;
+}
+.vm-infobox-content-statusbar-CPU{
+    position:absolute;
+    display:block;
+    background-color: #ff7738b7;
+    background: #ff7738b7;
+    width: 0%;
+    height: 100%;
+    top:0;
+
+    transition: width 0.5s ease-in-out;
+}
+.vm-infobox-content-statusbar-MEM{
+    position:absolute;
+    display:block;
+    background-color: #ff7738b7;
+    background: #ff7738b7;
+    width: 0%;
+    height: 100%;
+    top:0;
+}
+.vm-infobox-content-data-icon{
+    position:relative;
+    display:block;
+    width: 90px; /* Adjust size */
+    height: 90px;
+    top:0;
+    padding-top: 22%;
+    padding-left: 30%;
+    opacity: 30%;
+}
+
+/* -----INFO USER PANEL--------------------------------------------------------------------------------------- */
+/* VM USER INFO PANEL */
+#vm-infobox-toggle-user {
+    display: none;
+}
+#vm-infobox-toggle-user:checked + .vm-infobox-head:after {
+    transform: rotate(-90deg);
+}
+#vm-infobox-toggle-user:checked ~ .vm-infobox-content {
+    max-height: 100%;
+    opacity: 1;
+    top: 23px;
+}
+.vm-infobox-user-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Ensures right alignment */
+    width:22%;
+    right: 10px;
+    top: 36.7%;
+    transition: top 0.3s ease-in-out; /* Smooth animation when repositioning */
+    position: absolute;
+    right: 10px;
+}
