@@ -2,6 +2,7 @@
 
 ![full_infrastructure_architecture_wSQL](https://github.com/user-attachments/assets/317eae37-cf0d-4b72-af7e-5b0e04ada3cd)
 ![image](https://github.com/user-attachments/assets/c4a7b2dd-035d-4a05-a75c-e9f08ced4a1a)
+![image](https://github.com/user-attachments/assets/37034d96-c879-4170-81e3-0d2a200dfcba)
 
 
 
