@@ -37,13 +37,17 @@ async function getUserProfileInfo() {
         const alias       = data.alias       || "Unknown";
         //full profile pic path
         const profilePicPath = `/static/images/${profilePic}`;
+        const role        = data.role        || "User";
         console.log("Profile Pic Path:", profilePicPath);
 
     // Update UI elements
     //document.getElementById('username-display').textContent = `${firstName} ${lastName}`;
     //document.getElementById('user-email').textContent = email;
-    document.getElementById('username-display').textContent = alias;
-    document.getElementById('profile-pic').src              = profilePicPath;
+    document.getElementById('username-display').textContent    = alias;
+    document.getElementById('profile-pic').src                 = profilePicPath;
+    document.getElementById('vm-infobox-user-profile-pic').src = profilePicPath;
+    document.getElementById('vm-infobox-content-user-text-name').textContent   = `${firstName} ${lastName}`;
+    document.getElementById('vm-infobox-content-user-text-role').textContent   = `${role} role`
     } else {
         console.error("User profile retrieval failed:", data.message);
     }

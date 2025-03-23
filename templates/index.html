@@ -77,7 +77,9 @@
         <div class="vm-infobox-container">
             <div class="vm-infobox-header">
                 <input type="checkbox" id="vm-infobox-toggle">
-                <label for="vm-infobox-toggle" class="vm-infobox-head" id="vm-infobox-header-text">VM Machine Info</label>
+                    <label for="vm-infobox-toggle" class="vm-infobox-head"     id="vm-infobox-header-text">VM Machine Info</label>
+                    <label class="vm-infobox-head-ico"><img class="vm-infobox-ico" src="{{ url_for('static', filename='images/vm_machine_icon.png') }}"></label>
+                    <label for="vm-infobox-toggle" class="vm-infobox-head-cpu" id="vm-infobox-user-header-cpu-mem"></label>
                 <div class="vm-infobox-content">
                     <div class="vm-infobox-content-text">
                         Status
@@ -100,7 +102,7 @@
                         </div>
                         <div class="vm-infobox-content-text">
                             <div class="cpu-graph-container">
-                                <canvas id="cpuUsageChart"></canvas>
+                                <canvas id="cpuUsageChart" class="canvas"></canvas>
                             </div>
                         </div>
                     </div>
@@ -136,10 +138,32 @@
     <div class="vm-infobox-user-container">
         <div class="vm-infobox-header">
             <input type="checkbox" id="vm-infobox-toggle-user" class="vm-toggle-checkbox">
-            <label for="vm-infobox-toggle-user" class="vm-infobox-head" id="vm-infobox-user-header-text">VM User Info</label>
-            <div class="vm-infobox-content">
-                <div class="vm-infobox-content-text">
+                <label for="vm-infobox-toggle-user" class="vm-infobox-head" id="vm-infobox-user-header-text">VM User Credentials</label>
+                <label class="vm-infobox-head-ico"><img class="vm-infobox-ico" src="{{ url_for('static', filename='images/vm_credentials_ico.png') }}"></label>
+            <div class="vm-infobox-content-user">
+                <div class="vm-infobox-content-user-profile-pic-box">
                     <!-- User info content goes here -->
+                        <div class="vm-infobox-content-data-text">
+                            <img id="vm-infobox-user-profile-pic" class="vm-infobox-user-profile-pic" src="{{ url_for('static', filename='images/user.png') }}">
+                            <div class="vm-infobox-content-user-text">
+                                <div  id="vm-infobox-content-user-text-name" class="vm-infobox-content-user-text-name">Alejandro E. </div>
+                                <div  id="vm-infobox-content-user-text-role" class="vm-infobox-content-user-text-role">My role is Administrator </div>
+                            </div>
+                        </div>
+                </div>
+                <div class="vm-infobox-content-user-login-info">
+                    <!-- User info content goes here -->
+                            <div  class="vm-infobox-content-login-info">Username  </div>
+                            <div  class="vm-infobox-content-login-info">Password  </div>
+                            <div  class="vm-infobox-content-login-info">Domain    </div>
+                            <div  class="vm-infobox-content-login-info">Last login</div>
+                </div>
+                <div class="vm-infobox-content-user-login-data">
+                    <!-- User info content goes here -->
+                            <div  id="vm-infobox-content-user-login-name"      class="vm-infobox-content-login-info-data">aescobedo </div>
+                            <div  id="vm-infobox-content-user-login-pwd"       class="vm-infobox-content-login-info-data"><button type="button" class="vm-info-show-pw" onclick="togglePassword()">👁</button><input type="password" id="login-input-info-data-pw" class="login-input-info-data-pw" placeholder="password" autocorrect="off" spellcheck="false"></div>
+                            <div  id="vm-infobox-content-user-login-domain"    class="vm-infobox-content-login-info-data">zamatallica</div>
+                            <div  id="vm-infobox-content-user-login-lastlogin" class="vm-infobox-content-login-info-data">3/22/2025 11:51 PM</div>
                 </div>
             </div>
         </div>

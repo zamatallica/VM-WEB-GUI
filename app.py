@@ -298,14 +298,15 @@ def get_user_info():
             if not user_info:
                 return jsonify({'success': False, 'message': 'User not found'}), 404
 
-            first_name, last_name, email, profile_pic, alias = user_info
+            first_name, last_name, email, profile_pic, alias, role_name = user_info
             return jsonify({
                     'success':        True,
                  'first_name':  first_name,
                   'last_name':   last_name,
                       'email':       email,
                 'profile_pic': profile_pic,
-                      'alias':       alias
+                      'alias':       alias,
+                      'role':    role_name,
             })
         
         except Exception as e:

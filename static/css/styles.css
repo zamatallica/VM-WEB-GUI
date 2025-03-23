@@ -15,7 +15,7 @@
 :root {
     --bg-color: #1a1a1a;
     --card-bg: #2d2d2d;
-    --primary: #007bff;
+    --primary: #f77d1a;
     --text: #fff;
 }
 
@@ -66,7 +66,7 @@ button {
 }
 
 button:hover {
-    background: #0056b3;
+    background: #f77d1a;
 }
 
 .error {
@@ -480,13 +480,17 @@ _________            .___         .___  _______/\  ________                .__  
      /_______ (____  /__|_|  (____  /__| (____  /____/____/__|\___  >____  /    
     
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+.container{
+    padding-right: 1%;
+
+}
 .vm-infobox-container {
     display: flex;
     flex-direction: column;
     align-items: flex-end; /* Ensures right alignment */
     width:22%;
     position: absolute;
-    right: 10px;
+    right: 15px;
     top: 5%;
 }
 
@@ -503,12 +507,23 @@ _________            .___         .___  _______/\  ________                .__  
     padding: 10px;
     border-radius: 3px;
 }
+.vm-infobox-ico{
+    position: relative;
+    height: 15px;
+}
+.vm-infobox-head-ico{
+    display:inline-block;
+    top: 3px;
+    left:8%;
+    position:absolute;
+    color: #ffffffc9;
+}
 
 #vm-infobox-toggle{
     display:none;
 }
 .vm-infobox-head{
-    display:block;
+    display:inline-block;
     width:95%;
     top:0;
     right:0;
@@ -517,6 +532,27 @@ _________            .___         .___  _______/\  ________                .__  
     position:absolute;
     cursor: pointer;
     padding: 10px;
+}
+.vm-infobox-head-cpu{
+    display:inline-block;
+    text-align: right;
+    font-size:10px;
+    font-family: 'Inter', 'Segoe UI', 'Arial', sans-serif;
+    width:95%;
+    top: .1%;
+    right:5%;
+    height:8px;
+    width: fit-content;
+    box-sizing: border-box;
+    position:absolute;
+    cursor: pointer;
+    padding: 10px;
+    opacity:0;
+    font-weight: 500;
+    color: #ffffffc9;
+    letter-spacing: 0.3px;
+    padding-right: 10px;
+    transition: all 0.3s ease-in-out;
 }
 .vm-infobox-head:after{
     position: absolute;
@@ -527,6 +563,9 @@ _________            .___         .___  _______/\  ________                .__  
     right:10px;
     font-size: 20px;
     transition: all 0.3s ease;
+}
+.vm-infobox-header input:checked ~ .vm-infobox-head-cpu{
+    opacity: 100;
 }
 
 .vm-infobox-header input:checked + .vm-infobox-head:after{
@@ -559,7 +598,7 @@ _________            .___         .___  _______/\  ________                .__  
 
 .vm-infobox-header input:checked ~.vm-infobox-content{
     max-height: 0px;
-    opacity: 1;
+    opacity: 0;
     top:23px;
 }
 
@@ -603,6 +642,9 @@ _________            .___         .___  _______/\  ________                .__  
     font-weight: bold;
     border: 1px solid #ffffff48;
 }
+.canvas{
+    padding-left: 5%;
+}
 .vm-infobox-content-statusbar-CPU{
     position:absolute;
     display:block;
@@ -636,15 +678,37 @@ _________            .___         .___  _______/\  ________                .__  
 
 /* -----INFO USER PANEL--------------------------------------------------------------------------------------- */
 /* VM USER INFO PANEL */
+.vm-infobox-content-user {
+    width:  90%; /* Inherit width from container */
+    height: -100%;
+    border: 1px solid #ffffff2a;
+    color: #929292c7;
+    background: linear-gradient(to bottom, #2b2b2bcb, #1d1c1c);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+    font-weight: bold;
+    text-align: left;
+    line-height: 33px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.7);
+    display:inline-block;
+    gap: 10px;
+    padding: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    position: absolute;
+    top:30px;
+    border-radius: 5px;
+    right:0;
+}
 #vm-infobox-toggle-user {
     display: none;
 }
 #vm-infobox-toggle-user:checked + .vm-infobox-head:after {
     transform: rotate(-90deg);
 }
-#vm-infobox-toggle-user:checked ~ .vm-infobox-content {
+#vm-infobox-toggle-user:checked ~ .vm-infobox-content-user {
     max-height: 100%;
-    opacity: 1;
+    opacity: 0;
     top: 23px;
 }
 .vm-infobox-user-container {
@@ -656,5 +720,149 @@ _________            .___         .___  _______/\  ________                .__  
     top: 36.7%;
     transition: top 0.3s ease-in-out; /* Smooth animation when repositioning */
     position: absolute;
-    right: 10px;
+    right: 15px;
+}
+.vm-infobox-content-user-profile-pic-box{
+    position:relative;
+    display:block;
+    left:0%;
+    width:100%;
+    padding-top: 3%;
+    padding-bottom: 2%;
+    border: 1px solid #555353ab;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    background-color: #00000044;
+
+}
+.vm-infobox-content-user-profile{
+    position:relative;
+    display:block;
+    top:0;
+    left:0%;
+    width:100%;
+    padding-top: 3%;
+    padding-bottom: 2%;
+    border-bottom: 1px solid #5553537c;
+    background-color: #1a1a1a8f;
+}
+.vm-infobox-user-profile-pic{
+    position:relative;
+    display:block;
+    width: 90px; /* Adjust size */
+    height: 90px;
+    bottom:0;
+    border-radius: 50%;
+    left: calc(50% - (90px/2));
+    box-shadow: 0 0 0 4px #ff77388f;
+    display: block;
+    object-fit: cover;
+}
+.vm-infobox-content-user-text{
+    position:relative;
+    display:block;
+    text-align:center;
+    padding: 5%;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+}
+.vm-infobox-content-user-text-name{
+    font-size: 18px;
+    font-weight: 400;
+    text-shadow: #ffffff;
+    color: rgb(177, 177, 177);
+    display: block;
+    height: 21px;
+    top:0;
+}
+.vm-infobox-content-user-text-role{
+    font-weight: 100;
+    color:#fd9c6f91 ;
+    display: block;
+    height: 5px;;
+    top:0;
+}
+.vm-infobox-content-user-login-info{
+    position:relative;
+    display:grid;
+    grid-template-columns: repeat(4, 1fr); /* 3 columns */
+    gap: 10px;
+    top:0;
+    left:0%;
+    width:100.5%;
+    color: #ce6a31c4;
+    border-bottom: 1px solid #fd821e4b;
+    background-color: #3a393965;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 400;
+}
+.vm-infobox-content-login-info{
+    position:relative;
+    display:inline-flex;
+    text-align:left;
+    padding: 2%;
+    padding-left: 7%;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+}
+.vm-infobox-content-user-login-data{
+    position:relative;
+    display:grid;
+    grid-template-columns: 4fr 4fr 4fr 4fr; /* 3 columns */
+    gap: 5px;
+    top:0;
+    left:0%;
+    width:100.5%;
+    color: #b8b8b8c4;
+    border-bottom: 1px solid #77777771;
+    background-color: #1d1c1c65;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 200;
+}
+.vm-infobox-content-login-info-data{
+    position:relative;
+    display:inline-flex;
+    text-align:left;
+    padding: 2%;
+    padding-left: 7%;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+}
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ff7738;
+    border-radius: 5px;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    box-shadow: inset 0 0 5px rgba(255, 119, 56, 0.3);
+    transition: all 0.3s ease;
+}
+
+input[type="password"]:focus {
+    outline: none;
+    border-color: #ffa366;
+    box-shadow: 0 0 8px rgba(255, 119, 56, 0.5);
+}
+
+input.login-input-info-data-pw{
+    border: 0px ;
+    height: 6px;
+    top:0;
+    width:80px;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+button.vm-info-show-pw{
+    width: 16px;
+    height: 16px;
+    padding-left: 0px;
+    border: none;
+    background: #00000000;
+    color: #b8b8b8c4;
+    border-radius: 2px;
+    
 }

@@ -309,34 +309,48 @@ function sendKey(key) {
 
 // Function to format uptime in days, hours, minutes, and seconds
 function formatUptime(seconds) {
-const days = Math.floor(seconds / 86400); // 86400 seconds in a day
-seconds %= 86400; // Get remaining seconds after removing days
+        const days = Math.floor(seconds / 86400); // 86400 seconds in a day
+        seconds %= 86400; // Get remaining seconds after removing days
 
-const hours = Math.floor(seconds / 3600); // 3600 seconds in an hour
-seconds %= 3600; // Get remaining seconds after removing hours
+        const hours = Math.floor(seconds / 3600); // 3600 seconds in an hour
+        seconds %= 3600; // Get remaining seconds after removing hours
 
-const minutes = Math.floor(seconds / 60); // 60 seconds in a minute
-seconds %= 60; // Remaining seconds
+        const minutes = Math.floor(seconds / 60); // 60 seconds in a minute
+        seconds %= 60; // Remaining seconds
 
-return `${days} Days ${hours}:${minutes}:${seconds}`;
+        return `${days} Days ${hours}:${minutes}:${seconds}`;
 }
 
-//CPU Graph Initialize
-// Store the Chart instance globally to avoid re-creating it
+/*CPU Graph Initialize
+  Store the Chart instance globally to avoid re-creating it  */
+
 let cpuChart;
 let cpuData = {
 labels: Array(20).fill(""), // 20 empty slots
-datasets: [{
-    label: "CPU Usage (%)",
-    borderColor: "rgb(243, 130, 37)",
-    backgroundColor: "rgb(229, 137, 9,.2)",
-    borderWidth: 1,
-    fill: true,
-    tension: 0.3, // Makes the line smooth
-    pointRadius: 0, // No dots on the graph
-    pointHoverRadius: 0, // No dots on hover
-    data: Array(20).fill(0) // Initial data
-}]
+datasets: [
+    {
+        label: "CPU (%)",
+        borderColor: "rgb(243, 130, 37)",
+        backgroundColor: "rgb(229, 137, 9,.2)",
+        borderWidth: 1,
+        fill: true,
+        tension: .3, // Makes the line smooth
+        pointRadius: 0, // No dots on the graph
+        pointHoverRadius: 0, // No dots on hover
+        data: Array(20).fill(0) // Initial data
+    },
+    {
+        label: "MEM (%)",
+        borderColor: "rgb(131, 23, 255)",
+        backgroundColor: "rgb(131, 23, 255,.2)",
+        borderWidth: 1,
+        fill: false,
+        tension: 0.3, 
+        pointRadius: 0, 
+        pointHoverRadius: 0, 
+        data: Array(20).fill(0) 
+    }
+]
 };
 
 // Ensure the chart is created **only once**
@@ -412,6 +426,7 @@ try {
         document.querySelector('.vm-infobox-content-statusbar-MEM').style.width = `${memUsagePercent}%`;
         document.getElementById('vm-infobox-Ipaddress').textContent = `${data.ipv4}`;
         document.getElementById('vm-infobox-vmhostname').textContent = `Hostname: ${data.hostname}`;
+        document.getElementById('vm-infobox-user-header-cpu-mem').textContent = `CPU: ${Math.round(cpuUsagePercent)}% | MEM: ${Math.round(memUsagePercent)}%`
 
         // Ensure CPU chart is initialize
         if (!cpuChart) {
@@ -419,17 +434,19 @@ try {
         }
 
         // Update CPU graph 
-        if (cpuChart) {
+        if  (cpuChart && cpuChart.data && cpuChart.data.datasets.length >= 2) {
             cpuChart.data.datasets[0].data.push(cpuUsagePercent);
+            cpuChart.data.datasets[1].data.push(memUsagePercent);
             cpuChart.data.labels.push(""); // Maintain label count
 
             // Limit data points to 20 
             if (cpuChart.data.datasets[0].data.length > 20) {
                 cpuChart.data.datasets[0].data.shift(); // Remove oldest
+                cpuChart.data.datasets[1].data.shift(); // Remove oldest
                 cpuChart.data.labels.shift();
             }
 
-            cpuChart.update(); // Refresh 
+            cpuChart.update("none"); // Refresh 
         }
 
         let whatOS = data.os.toLowerCase();
@@ -521,7 +538,7 @@ if (vmSelect && vmSelectBtn) {
         const contentHeight = vmInfoContent.scrollHeight; 
         
         if (vmInfoToggle.checked) {
-            userPanel.style.top = "120px"; // Adjust as needed
+            userPanel.style.top = "100px"; // Adjust as needed
         } else {
              userPanel.style.top = `${contentHeight + 470}px`
             if (contentHeight != 0){
