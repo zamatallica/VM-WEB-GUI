@@ -47,12 +47,16 @@
 
             if (response.ok && data.success) {
                 resetLoginState();
+                document.getElementById('username').value="";
+                document.getElementById('password').value="";
                 document.getElementById('username-display').textContent = username.toLowerCase() ;
                 document.getElementById('loginContainer').classList.add('hidden');
                 document.getElementById('mainInterface').classList.remove('hidden');
                 document.getElementById('mainInterface_right').classList.remove('hidden');
+                document.getElementById('status').textContent = "";
                 getUserProfileInfo();
                 populateVMsDropDown();
+                cleanupVMInfoPanels();
             } else {
                 handleFailedAttempt(data.message || "Authentication failed");
             }
@@ -103,7 +107,7 @@
     }
 
 //Global Current VM connected
-var currentVM = null;
+currentVM = null;
 
 // Proxmox connection logic
 let vncClient = null;
@@ -268,18 +272,35 @@ async function logout() {
         });
 
         if (response.ok) {
+            document.getElementById('vmSelect').value = "";
+            document.getElementById('username-display').textContent = "";
             document.getElementById('loginContainer').classList.remove('hidden');
             document.getElementById('mainInterface').classList.add('hidden');
             document.getElementById('mainInterface_right').classList.add('hidden');
+            document.getElementById('vmSelect').value = "";
+            document.getElementById('status').textContent = "";
+
+            // Stop Panel updates
+            currentVM = null;
+            startAutoUpdate();
+
+            if (updateInterval) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+            }
+            //Cleanup VM Info Panel
+            cleanupVMInfoPanels();
+
             // Clean up existing VNC client
             if (vncClient) {
                 vncClient.disconnect();
                 vncClient = null;
-                var currentVM = null;
+                currentVM = null;
                 vncContainer.classList.remove("connected", "bad-disconnect","disconnecting");
-                status.textContent = ""
+                document.getElementById('username-display').textContent = "";
+                console.log("NOW LOGGING OUT USER");
             }
-        }
+        }    
     } catch (error) {
         console.error('Logout error:', error);
     }
@@ -388,11 +409,11 @@ if (!cpuChart) { // **Create chart only if it doesn't exist**
 }
 
 async function populateVMInfoPanel(vmId) {
-if (!vmId) {
+if (!vmId ) {
     //nothing to do
     return;
 }
-
+console.log(currentVM)
 try {
     // Fetch VM info from backend
     const response = await fetch(`/api/proxmox/vm-InfoPanel?vmId=${vmId}`, {
@@ -411,7 +432,7 @@ try {
         const bytetoGB = 0.000000000931322574615478515625
         const formattedUptime = formatUptime(data.uptime);
         const cpuUsagePercent = Math.min(Math.max(data.cpuusage * 100, 0), 100); // Ensure 0-100 range
-        const memUsagePercent = Math.min(Math.max((data.memusage/data.maxmem) * 100, 0), 100); // Ensure 0-100 range
+        let memUsagePercent = Math.min(Math.max((data.memusage/data.maxmem) * 100, 0), 100); // Ensure 0-100 range
         const cpuUsagePercentText  = `${Math.round(cpuUsagePercent)}`;
     
 
@@ -427,6 +448,18 @@ try {
         document.getElementById('vm-infobox-Ipaddress').textContent = `${data.ipv4}`;
         document.getElementById('vm-infobox-vmhostname').textContent = `Hostname: ${data.hostname}`;
         document.getElementById('vm-infobox-user-header-cpu-mem').textContent = `CPU: ${Math.round(cpuUsagePercent)}% | MEM: ${Math.round(memUsagePercent)}%`
+
+        //HIGH CPU Usage Shenanigans
+        const cpuBar = document.querySelector('.vm-infobox-content-statusbar-CPU');
+
+        // Set bar width
+        cpuBar.style.width = `${cpuUsagePercent}%`;
+
+        // Calculate glow intensity (adjust scaling as needed)
+        const glowIntensity = Math.min(cpuUsagePercent / 100, 1); // 0.0 to 1.0
+        const glowOpacity = 0.3 + glowIntensity * 0.7; // from 0.3 to 1.0
+
+        cpuBar.style.boxShadow = `0 0 ${4 + glowIntensity * 16}px ${1 + glowIntensity * 4}px rgba(255, 119, 56, ${glowOpacity})`;
 
         // Ensure CPU chart is initialize
         if (!cpuChart) {
@@ -447,6 +480,38 @@ try {
             }
 
             cpuChart.update("none"); // Refresh 
+
+            //CPU and MEM usage bars 
+            const cpuBar = document.querySelector('.vm-infobox-content-statusbar-CPU');
+            const memBar = document.querySelector('.vm-infobox-content-statusbar-MEM');
+
+            // Set the width visually
+            cpuBar.style.width = `${cpuUsagePercent}%`;
+            memBar.style.width = `${memUsagePercent}%`;
+            
+            // Set the dynamic glow always
+            let glowIntensity = cpuUsagePercent / 100;
+            let glowOpacity = Math.min(glowIntensity + 0.1, 1);
+
+            if(memUsagePercent < 85){ //mem threshold 
+                memUsagePercent = memUsagePercent - 40
+            }
+            let memglowIntensity = memUsagePercent / 100; 
+            let memglowOpacity = Math.min(memglowIntensity + 0.1, 1);
+
+            //CPU Bar
+            const red = 255;
+            const green = Math.floor(119 - (glowIntensity * 119)); // Goes from orange (119) to 0
+            const blue = Math.floor(56 - (glowIntensity * 56));     // Slight darkening
+            
+            cpuBar.style.boxShadow = `0 0 ${4 + glowIntensity * 16}px ${1 + glowIntensity * 4}px rgba(${red}, ${green}, ${blue}, ${glowOpacity})`;
+            
+            //Mem Bar
+            const mgreen = Math.floor(119 - (memglowIntensity * 119)); // Goes from orange (119) to 0
+            const mblue = Math.floor(56 - (memglowIntensity * 56));     // Slight darkening
+            
+            memBar.style.boxShadow = `0 0 ${4 + memglowIntensity * 16}px ${1 + memglowIntensity * 4}px rgba(${red}, ${mgreen}, ${mblue}, ${memglowOpacity})`;
+            
         }
 
         let whatOS = data.os.toLowerCase();
@@ -488,10 +553,30 @@ try {
 let updateInterval = null; // Store the interval ID
 
 // Function to start auto-refreshing the VM info panel
-function startAutoUpdate(currentVM) {
+function startAutoUpdate() {
 if (!currentVM) {
-    console.error("No VM selected, stopping auto-update.");
-    return;
+
+        // Clear dropdown and reset info panel
+        document.getElementById('vmSelect').value = "";
+        cleanupVMInfoPanels();
+  
+        // Clear chart data before destroy
+        if (cpuChart) {
+            cpuChart.data.datasets.forEach(ds => ds.data = []);
+            cpuChart.data.labels = [];
+            cpuChart.update(); // Optional: reflect before destroy
+            cpuChart.destroy();
+            cpuChart = null;
+        }
+   
+
+        // Stop interval updates if running
+        if (updateInterval) {
+            clearInterval(updateInterval);
+            updateInterval = null;
+        }
+
+        return;
 }
 
 // Stop any previous interval before starting a new one
@@ -553,3 +638,36 @@ if (vmSelect && vmSelectBtn) {
     // Run the function once to set the initial state
     adjustUserPanelPosition();
 });
+
+function cleanupVMInfoPanels() {
+    document.getElementById('vm-infobox-uptime').textContent = "Uptime:";
+    document.querySelector('.vm-infobox-content-statusbar-CPU').style.width = "0%";
+    document.getElementById('vm-infobox-CPU-usage').textContent = "";
+    document.getElementById('vm-infobox-OSname').textContent = "OS:";
+    document.getElementById('vm-infobox-header-text').textContent = "VM Machine Info";
+    document.getElementById('vm-infobox-vmstatus').textContent = "";
+    document.getElementById('vm-infobox-MEM-usage').textContent = "";
+    document.querySelector('.vm-infobox-content-statusbar-MEM').style.width = "0%";
+    document.getElementById('vm-infobox-Ipaddress').textContent = "0.0.0.0";
+    document.getElementById('vm-infobox-vmhostname').textContent = "Hostname:";
+    document.getElementById('vm-infobox-user-header-cpu-mem').textContent = "";
+    document.getElementById('vm-infobox-OS-icon').src= "/static/images/os_default.png";
+
+    // Clear chart data before destroy
+    if (cpuChart) {
+        cpuChart.data.datasets.forEach(ds => ds.data = []);
+        cpuChart.data.labels = [];
+        cpuChart.update(); // Optional: reflect before destroy
+        cpuChart.destroy();
+        cpuChart = null;
+    }
+
+
+    // Stop interval updates if running
+    if (updateInterval) {
+        clearInterval(updateInterval);
+        updateInterval = null;
+    }
+    
+
+}

@@ -653,8 +653,8 @@ _________            .___         .___  _______/\  ________                .__  
     width: 0%;
     height: 100%;
     top:0;
-
-    transition: width 0.5s ease-in-out;
+    box-shadow: 0 0 4px 1px rgb(255, 119, 56); /* Default glow */
+    transition: all 0.3s ease-in-out;
 }
 .vm-infobox-content-statusbar-MEM{
     position:absolute;
@@ -664,6 +664,8 @@ _________            .___         .___  _______/\  ________                .__  
     width: 0%;
     height: 100%;
     top:0;
+    box-shadow: 0 0 4px 1px rgb(255, 119, 56); /* Default glow */
+    transition: all 0.3s ease-in-out;
 }
 .vm-infobox-content-data-icon{
     position:relative;
@@ -779,7 +781,7 @@ _________            .___         .___  _______/\  ________                .__  
     font-weight: 100;
     color:#fd9c6f91 ;
     display: block;
-    height: 5px;;
+    height: 5px;
     top:0;
 }
 .vm-infobox-content-user-login-info{
@@ -828,11 +830,14 @@ _________            .___         .___  _______/\  ________                .__  
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
 }
+input[type="text"] {
+    border-radius: 50px;
+}
 input[type="password"] {
     width: 100%;
     padding: 10px;
     border: 1px solid #ff7738;
-    border-radius: 5px;
+    border-radius: 50px;
     background-color: #1e1e1e;
     color: #ffffff;
     font-family: 'Segoe UI', sans-serif;
