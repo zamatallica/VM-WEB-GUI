@@ -159,7 +159,9 @@ app.get('/api/proxmox/vnc-ticket', async (req, res) => {
       });
 
       if (!sessionValidation.data.success) {
+          //return res.status(401).json({ error: 'Unauthorized' });
           return res.status(401).json({ error: 'Unauthorized' });
+          
       }
 
       const { vmId } = req.query;

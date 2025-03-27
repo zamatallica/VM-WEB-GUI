@@ -38,7 +38,7 @@ async function getUserProfileInfo() {
         //full profile pic path
         const profilePicPath = `/static/images/${profilePic}`;
         const role        = data.role        || "User";
-        console.log("Profile Pic Path:", profilePicPath);
+        //console.log("Profile Pic Path:", profilePicPath);
 
     // Update UI elements
     //document.getElementById('username-display').textContent = `${firstName} ${lastName}`;
@@ -59,7 +59,7 @@ async function getUserProfileInfo() {
 }
 }
 
-    async function populateVMsDropDown() {
+async function populateVMsDropDown() {
     try {
         const response = await fetch('/api/get-vms', { 
             method: 'GET',
@@ -89,6 +89,8 @@ async function getUserProfileInfo() {
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-        populateVMsDropDown();
-        getUserProfileInfo();
+        if (document.getElementById('loginContainer').classList.contains("hidden")){ //Are we in the login screee?
+            populateVMsDropDown();
+            getUserProfileInfo();
+       }
     });

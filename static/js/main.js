@@ -172,7 +172,9 @@ try {
         vncClient.resizeSession = true;  // Auto-resize to fit
         vncClient.qualityLevel     = 9;       // Set quality level (0-9, higher is better)
         vncClient.compressionLevel = 2;   // Set compression (0-9, lower is better)  
-        vncContainer.classList.remove("connected", "bad-disconnect","disconnecting");
+        if (vncContainer) {
+            vncContainer.classList.remove("connected", "bad-disconnect", "disconnecting");
+        }
         vncContainer.classList.add("connected");
 
     });
@@ -291,12 +293,15 @@ async function logout() {
             //Cleanup VM Info Panel
             cleanupVMInfoPanels();
 
+            const vncContainer = document.getElementById('vnc-container');
             // Clean up existing VNC client
             if (vncClient) {
                 vncClient.disconnect();
                 vncClient = null;
                 currentVM = null;
-                vncContainer.classList.remove("connected", "bad-disconnect","disconnecting");
+                if (vncContainer) {
+                    vncContainer.classList.remove("connected", "bad-disconnect", "disconnecting");
+                }
                 document.getElementById('username-display').textContent = "";
                 console.log("NOW LOGGING OUT USER");
             }
@@ -531,7 +536,7 @@ try {
             osIcon="/static/images/os_windows.png";
         }else if (isLinuxBased){
             osIcon="/static/images/os_linux.png";
-        }else if (whatOS.toLowerCase().search("mac") >= 0){
+        }else if (whatOS.search("mac") >= 0){
             osIcon="/static/images/os_mac.png";
         }else{
             osIcon = "/static/images/os_default.png";
@@ -642,12 +647,14 @@ if (vmSelect && vmSelectBtn) {
 function cleanupVMInfoPanels() {
     document.getElementById('vm-infobox-uptime').textContent = "Uptime:";
     document.querySelector('.vm-infobox-content-statusbar-CPU').style.width = "0%";
+    document.querySelector('.vm-infobox-content-statusbar-CPU').style.boxShadow = "0 0 4px 1px rgb(255, 119, 56)"; /* Default glow */
     document.getElementById('vm-infobox-CPU-usage').textContent = "";
     document.getElementById('vm-infobox-OSname').textContent = "OS:";
     document.getElementById('vm-infobox-header-text').textContent = "VM Machine Info";
     document.getElementById('vm-infobox-vmstatus').textContent = "";
     document.getElementById('vm-infobox-MEM-usage').textContent = "";
     document.querySelector('.vm-infobox-content-statusbar-MEM').style.width = "0%";
+    document.querySelector('.vm-infobox-content-statusbar-MEM').style.boxShadow = "0 0 4px 1px rgb(255, 119, 56)"; /* Default glow */
     document.getElementById('vm-infobox-Ipaddress').textContent = "0.0.0.0";
     document.getElementById('vm-infobox-vmhostname').textContent = "Hostname:";
     document.getElementById('vm-infobox-user-header-cpu-mem').textContent = "";

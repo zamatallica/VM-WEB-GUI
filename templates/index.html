@@ -36,8 +36,8 @@
             }
         }
 
-        // Call this function when the page loads
-        window.onload = checkSession;
+        // Run on page load
+        window.addEventListener('DOMContentLoaded', checkSession);
 
         function loadNoVNC(callback) {
             if (typeof window.RFB !== "undefined") {

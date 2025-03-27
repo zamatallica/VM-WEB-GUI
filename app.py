@@ -1,5 +1,5 @@
 # app.py (Backend)
-from flask import Flask, redirect, request, jsonify, render_template, send_from_directory
+from flask import Flask, redirect, url_for,request, jsonify, render_template, send_from_directory
 from flask_socketio import SocketIO
 import requests
 import pyodbc
@@ -282,6 +282,9 @@ def login():
 
 @app.route('/api/user-info', methods=['GET'])
 def get_user_info():
+        if not current_user.is_authenticated:
+            return redirect(url_for('unauthorized'))
+    
         try:
             user_id = current_user.id
             if not user_id:
@@ -320,6 +323,9 @@ def get_user_info():
 def get_vms():
     user_id = None
 
+    if not current_user.is_authenticated:
+        return redirect(url_for('unauthorized'))
+
     try:
             user_id = current_user.id
             if not user_id:
@@ -353,7 +359,62 @@ def get_vms():
         if conn:
             conn.close()
 
+@app.route('/api/get-vm-user-credentials', methods=['GET'])
+def get_vm_user_credentials():
+        user_id = None
+        conn = None
 
+        if not current_user.is_authenticated:
+            return redirect(url_for('unauthorized'))
+
+        try:
+            user_id = current_user.id
+            if not user_id:
+                return jsonify({'success': False, 'message': 'Unauthorized'}), 401
+
+            vm_id = request.args.get('vm_id', '').strip()
+            if not vm_id:
+                return jsonify({'success': False, 'message': 'No vm_id was given'}), 401
+            
+            try:
+                vm_id = int(vm_id)
+            except ValueError:
+                return jsonify({'success': False, 'message': 'Invalid vm_id format'}), 400
+        
+            conn = get_db_connection()
+            if not conn:
+                return jsonify(success=False, message="Database connection failed"), 500
+                    
+            with conn.cursor() as cursor:
+                cursor.execute("{CALL usp_get_user_vm_credentials_backend(?, ?, 3, 0)}", (user_id,vm_id))
+                vm_user_credentials = cursor.fetchall()
+
+            if not vm_user_credentials:
+                return jsonify({'success': False, 'message': 'User credentials not found'}), 404
+
+            credentials_list = []
+            for credentials in vm_user_credentials:
+                account_username, credential_username, vm_pw_hash, domain_name, auth_method, last_logon = credentials
+                credentials_list.append({
+                    'account_username': account_username,
+                    'credential_username': credential_username,
+                    'vm_user_password_hash': vm_pw_hash,
+                    'domain_name': domain_name,
+                    'auth_method_name': auth_method,
+                    'vm_last_logon': last_logon,
+                })
+            return jsonify({'success': True, 'reslt set': credentials_list})
+        
+        except Exception as e:
+            return jsonify({'success': False, 'message': str(e), 'user_id': user_id}), 500
+
+        finally:
+            if conn:
+                conn.close()
+
+@app.route('/unauthorized')
+def unauthorized():
+    return render_template('unauthorized.html')
 
 if __name__ == '__main__':
     start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
