@@ -418,7 +418,6 @@ if (!vmId ) {
     //nothing to do
     return;
 }
-console.log(currentVM)
 try {
     // Fetch VM info from backend
     const response = await fetch(`/api/proxmox/vm-InfoPanel?vmId=${vmId}`, {
@@ -605,11 +604,13 @@ document.addEventListener("DOMContentLoaded", function () {
 const vmSelectBtn = document.getElementById("vmBtnSelect");
 const vmSelect = document.getElementById("vmSelect");
 
+//---------  CALLS PANEL POPULATE FUNCTIONS------------------------------------------------------------
 if (vmSelect && vmSelectBtn) {
     // Listen for VM selection change
     vmSelectBtn.addEventListener("click", function () {
         const selectedVM = vmSelect.value;
         startAutoUpdate(selectedVM);
+        populateVMUserLoginPanel(selectedVM)
     });
 
     // Start auto-update with the initially selected VM
@@ -675,6 +676,103 @@ function cleanupVMInfoPanels() {
         clearInterval(updateInterval);
         updateInterval = null;
     }
-    
-
 }
+
+function showToast(message) {
+    const toast = document.getElementById('status');
+    const previousMsg =  document.getElementById('status').textContent
+    toast.textContent = message;
+    toast.classList.add("shake")
+
+    setTimeout(() => {
+        toast.classList.remove("shake")
+        toast.textContent = previousMsg;
+    }, 3000);
+}
+
+let isVisible = false;
+let hideTimeout = null;
+
+function togglePassword() {
+    const pwInput = document.getElementById("login-input-info-data-pw");
+
+    if (!isVisible) {
+        pwInput.type = "text";
+        isVisible = true;
+
+        // Copy password to clipboard
+        navigator.clipboard.writeText(pwInput.value)
+            .then(() => showToast("Password copied to clipboard !!"))
+            .catch(err => console.error("Clipboard copy failed:", err));
+
+        // Auto-hide password after 5 seconds
+        hideTimeout = setTimeout(() => {
+            pwInput.type = "password";
+            isVisible = false;
+        }, 5000);
+    } else {
+        pwInput.type = "password";
+        isVisible = false;
+        clearTimeout(hideTimeout);
+    }
+}
+
+
+
+async function populateVMUserLoginPanel(vmId) {
+    if (!vmId ) {
+        //nothing to do
+        return;
+    }
+    try {
+        // Fetch VM info from backend
+        const response = await fetch(`api/get-vm-user-credentials?vm_id=${vmId}`, {
+            method: 'GET',
+            credentials: 'include'
+        });
+    
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+    
+        const data = await response.json();
+        console.log("Fetching Users credential:", data);
+        
+        console.log("Populate user Credentials called.");
+
+        const credentials_list = data["credentials_list"]
+        console.log(credentials_list[0].credential_username)
+    
+        // Check if API response contains the expected keys
+        if (data.success) {
+            const credential_username = credentials_list[0].credential_username;
+            const domain_name = credentials_list[0].domain_name
+            const vm_last_logon = credentials_list[0].vm_last_logon
+            const vm_user_password = credentials_list[0].vm_user_password;
+
+            document.getElementById("vm-infobox-content-user-login-name").textContent = credential_username;
+            document.getElementById("login-input-info-data-pw").value = vm_user_password;
+            document.getElementById("vm-infobox-content-user-login-domain").textContent = domain_name;
+            // Format the timestamp
+            const lastLogin = new Date(vm_last_logon);
+            const formattedLogin = lastLogin.toLocaleString();
+            document.getElementById("vm-infobox-content-user-login-lastlogin").textContent = formattedLogin;
+
+            const row_username = document.getElementById("vm-infobox-content-user-login-name");
+/*
+            select.innerHTML = '<option value="">-- Choose a VM --</option>';
+
+            data.vms.forEach(vm => {
+                let option = document.createElement("option");
+                row_username.innerHTML = ``
+                option.textContent = vm.proxmox_vm_name;
+                select.appendChild(option);
+            });
+        */
+        }
+    } catch (error) {
+        console.error("Fetch Error:", error);
+    }      
+    
+}
+

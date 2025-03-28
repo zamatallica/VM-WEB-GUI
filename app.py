@@ -394,16 +394,16 @@ def get_vm_user_credentials():
 
             credentials_list = []
             for credentials in vm_user_credentials:
-                account_username, credential_username, vm_pw_hash, domain_name, auth_method, last_logon = credentials
+                account_username, credential_username, vm_pw, domain_name, auth_method, last_logon = credentials
                 credentials_list.append({
                     'account_username': account_username,
                     'credential_username': credential_username,
-                    'vm_user_password_hash': vm_pw_hash,
+                    'vm_user_password': vm_pw,
                     'domain_name': domain_name,
                     'auth_method_name': auth_method,
                     'vm_last_logon': last_logon,
                 })
-            return jsonify({'success': True, 'reslt set': credentials_list})
+            return jsonify({'success': True, 'credentials_list': credentials_list})
         
         except Exception as e:
             return jsonify({'success': False, 'message': str(e), 'user_id': user_id}), 500

@@ -127,7 +127,7 @@ button:hover {
 
 }
 
-.status {
+.statusmsg {
     position: absolute;
     bottom: -18px;
     left: 10px; /* Adjust positioning */
@@ -144,7 +144,25 @@ button:hover {
     line-height: 33px; /* Centers text vertically */
     box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.5); /* Adds a subtle shadow */
 }
-
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+  }
+  
+  .shake {
+    animation: shake 0.5s;
+    animation-timing-function: ease-in-out;
+  }
+  
 /* Logout User */
 .logout-btn {
     position: absolute;
@@ -608,16 +626,18 @@ _________            .___         .___  _______/\  ________                .__  
     padding-top: 5px;
     font-weight: bold;
     text-shadow: #888;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 .vm-infobox-data-text{
-    position: absolute;
+    position: relative;
     display: inline-block;
     padding-top: 5px;
     font-weight:lighter;
     color: rgba(255, 255, 255, 0.795);
     text-shadow: #ffffffb7;
-    right: 0px;
     top: 0;
+    padding-left: 2%;
 }
 .vm-infobox-content-data {
     position: relative;
@@ -647,7 +667,7 @@ _________            .___         .___  _______/\  ________                .__  
 }
 .vm-infobox-content-statusbar-CPU{
     position:absolute;
-    display:block;
+    display:inline-flex;
     background-color: #ff7738b7;
     background: #ff7738b7;
     width: 0%;
@@ -658,7 +678,7 @@ _________            .___         .___  _______/\  ________                .__  
 }
 .vm-infobox-content-statusbar-MEM{
     position:absolute;
-    display:block;
+    display:inline-flex;
     background-color: #ff7738b7;
     background: #ff7738b7;
     width: 0%;
@@ -787,8 +807,9 @@ _________            .___         .___  _______/\  ________                .__  
 .vm-infobox-content-user-login-info{
     position:relative;
     display:grid;
-    grid-template-columns: repeat(4, 1fr); /* 3 columns */
-    gap: 10px;
+    height: 35px;
+    grid-template-columns: 4fr 4fr 4fr 4fr; /* 4 columns */
+    gap: 5px;
     top:0;
     left:0%;
     width:100.5%;
@@ -802,15 +823,16 @@ _________            .___         .___  _______/\  ________                .__  
     position:relative;
     display:inline-flex;
     text-align:left;
-    padding: 2%;
     padding-left: 7%;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .vm-infobox-content-user-login-data{
     position:relative;
     display:grid;
-    grid-template-columns: 4fr 4fr 4fr 4fr; /* 3 columns */
+    height: 35px;
+    grid-template-columns: 4fr 4fr 4fr 4fr; /* 4 columns */
     gap: 5px;
     top:0;
     left:0%;
@@ -825,10 +847,10 @@ _________            .___         .___  _______/\  ________                .__  
     position:relative;
     display:inline-flex;
     text-align:left;
-    padding: 2%;
     padding-left: 7%;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
+    text-overflow:ellipsis;
+    white-space: nowrap;
 }
 input[type="text"] {
     border-radius: 50px;
@@ -871,3 +893,39 @@ button.vm-info-show-pw{
     border-radius: 2px;
     
 }
+
+.login-input-info-data-pw{
+    text-overflow: ellipsis;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-flex;
+    cursor: pointer;
+  }
+  
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    background-color: #292828;
+    color: #ffd1bcab;
+    text-align: center;
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    border-color:   #f77d1a8a;
+    border: 1px solid #f5700254;
+    box-shadow: 0 0 6px #f77d1a5e;
+    position: absolute;
+    z-index: 1;
+    bottom: 80%; /* Position above the button */
+    left: 50%;
+    transform: translateX(-40%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+  }
+  
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+  }

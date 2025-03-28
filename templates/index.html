@@ -160,10 +160,10 @@
                 </div>
                 <div class="vm-infobox-content-user-login-data">
                     <!-- User info content goes here -->
-                            <div  id="vm-infobox-content-user-login-name"      class="vm-infobox-content-login-info-data">aescobedo </div>
-                            <div  id="vm-infobox-content-user-login-pwd"       class="vm-infobox-content-login-info-data"><button type="button" class="vm-info-show-pw" onclick="togglePassword()">👁</button><input type="password" id="login-input-info-data-pw" class="login-input-info-data-pw" placeholder="password" autocorrect="off" spellcheck="false"></div>
-                            <div  id="vm-infobox-content-user-login-domain"    class="vm-infobox-content-login-info-data">zamatallica</div>
-                            <div  id="vm-infobox-content-user-login-lastlogin" class="vm-infobox-content-login-info-data">3/22/2025 11:51 PM</div>
+                            <div  id="vm-infobox-content-user-login-name"      class="vm-infobox-content-login-info-data"></div>
+                            <div  id="vm-infobox-content-user-login-pwd"       class="vm-infobox-content-login-info-data"><button type="button" class="vm-info-show-pw tooltip" onclick="togglePassword()">👁 <span class="tooltiptext">Copy password to clipboard</span></button><input type="password" id="login-input-info-data-pw" class="login-input-info-data-pw" placeholder="" autocorrect="off" spellcheck="false"></div>
+                            <div  id="vm-infobox-content-user-login-domain"    class="vm-infobox-content-login-info-data"></div>
+                            <div  id="vm-infobox-content-user-login-lastlogin" class="vm-infobox-content-login-info-data"></div>
                 </div>
             </div>
         </div>
@@ -203,7 +203,7 @@
             <option value="">-- Choose a VM --</option>    
         </select>
         <button id="vmBtnSelect" onclick="connectToVM()">Connect</button>
-        <div class="status" id="status"></div>
+        <div class="statusmsg" id="status"></div>
     </div>
     <div id="vnc-container">
                 <button id="sidebar-toggle" onclick="toggleSidebar()">></button>
