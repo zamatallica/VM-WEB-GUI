@@ -53,6 +53,35 @@ input {
     color: var(--text);
     box-sizing: border-box;
 }
+/* Entire scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 8px; /* for horizontal scrollbar */
+}
+
+/* Track (the background) */
+::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 10px;
+}
+
+/* Handle (the thumb) */
+::-webkit-scrollbar-thumb {
+    background: #585858;
+    border-radius: 10px;
+    border: 2px solid #1e1e1e; /* for padding effect */
+}
+
+/* Hover state */
+::-webkit-scrollbar-thumb:hover {
+    background: #636363;
+}
+
+/* Scrollbar base style */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #5c5c5c #1e1e1e; /* thumb color | track color */
+}
 
 button {
     width: 100%;
@@ -162,7 +191,7 @@ button:hover {
     animation: shake 0.5s;
     animation-timing-function: ease-in-out;
   }
-  
+
 /* Logout User */
 .logout-btn {
     position: absolute;
@@ -528,7 +557,20 @@ _________            .___         .___  _______/\  ________                .__  
 .vm-infobox-ico{
     position: relative;
     height: 15px;
+    width: 15px;
 }
+
+.vm-filter-ico{
+    position: relative;
+    height: 11px;
+    top:3%;
+    right: 50%;
+}
+.vm-filter-ico:hover {
+    transform: scale(1.2);
+    color: #ff9955;
+}
+
 .vm-infobox-head-ico{
     display:inline-block;
     top: 3px;
@@ -808,7 +850,7 @@ _________            .___         .___  _______/\  ________                .__  
     position:relative;
     display:grid;
     height: 35px;
-    grid-template-columns: 4fr 4fr 4fr 4fr; /* 4 columns */
+    grid-template-columns: 4fr 4fr 4fr 4fr  1fr; /* 4 columns */
     gap: 5px;
     top:0;
     left:0%;
@@ -828,12 +870,29 @@ _________            .___         .___  _______/\  ________                .__  
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+.vm-infobox-content-login-info-filter{
+    cursor:pointer;
+}
+.vm-Credentials-Dataset{
+    white-space: nowrap;           /* Prevents text wrapping */            /* Hides overflow */
+    text-overflow: ellipsis;       /* Adds '...' to overflowed text */
+    max-width: 100%;               /* Ensures content stays within bounds */
+    box-sizing: border-box;  
+}
+.vm-infobox-content-login-info-login{
+   overflow: hidden; 
+}
+.vm-infobox-content-login-info-login:hover {
+    overflow: visible;
+    white-space: nowrap;
+    position: relative;
+}
+
 .vm-infobox-content-user-login-data{
     position:relative;
     display:grid;
     height: 35px;
     grid-template-columns: 4fr 4fr 4fr 4fr; /* 4 columns */
-    gap: 5px;
     top:0;
     left:0%;
     width:100.5%;
@@ -851,6 +910,12 @@ _________            .___         .___  _______/\  ________                .__  
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     text-overflow:ellipsis;
     white-space: nowrap;
+}
+.vm-alternate-color-0{
+    background-color: #383838;
+}
+.vm-alternate-color-1{
+    background-color: #7e4d1f;
 }
 input[type="text"] {
     border-radius: 50px;
@@ -884,8 +949,8 @@ input.login-input-info-data-pw{
 }
 
 button.vm-info-show-pw{
-    width: 16px;
-    height: 16px;
+    width: 4px;
+    height:4px;
     padding-left: 0px;
     border: none;
     background: #00000000;
@@ -900,7 +965,7 @@ button.vm-info-show-pw{
 
 .tooltip {
     position: relative;
-    display: inline-flex;
+    display: inline-block;
     cursor: pointer;
   }
   
@@ -916,16 +981,78 @@ button.vm-info-show-pw{
     border: 1px solid #f5700254;
     box-shadow: 0 0 6px #f77d1a5e;
     position: absolute;
-    z-index: 1;
-    bottom: 80%; /* Position above the button */
+    z-index: 9999; /* HIGHER than other nearby elements */
+    bottom: 125%; /* position above the trigger element */
     left: 50%;
     transform: translateX(-40%);
     opacity: 0;
     transition: opacity 0.3s;
     white-space: nowrap;
   }
-  
+
   .tooltip:hover .tooltiptext {
     visibility: visible;
     opacity: 1;
+  } 
+
+  .filter_credentials {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    z-index: 9999;
   }
+  
+  .filter_credentials .filter_options {
+    visibility: visible;
+    background-color: #292828;
+    color: #ffffff;
+    width: 120px;
+    border-color:   #f77d1a8a;
+    border-top: 1px solid #e97509b7;
+    box-shadow: 0 4px 6px rgba(0, 1, 1, 0.3);
+    text-align: left;
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    position: absolute;
+    z-index: 9999; /* HIGHER than other nearby elements */
+    bottom: -210%; /* position above the trigger element */
+    left: 50%;
+    transform: translateX(-100%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+  }
+
+  .filter_credentials:hover .filter_options {
+    visibility: visible;
+    opacity: 1;
+    z-index: 9999;
+    
+  } 
+
+  .filter_options_option{
+    color: rgb(255, 255, 255);
+    border-radius: 4px; /* Rounded edges */
+    transition: all 0.3s ease;
+    display: right;
+}
+
+  .filter_options_option:hover {
+    background: rgba(255, 255, 255, 0.11);
+    color: rgb(255, 255, 255);
+}
+
+.vm-filter-option-ico{
+    display: inline-block;
+    padding-left: 5%;
+    width: 15px; /* Adjust size */
+    height: 15px;
+    opacity: .7;
+}
+
+.vm-filter-option-ico-text{
+    display: inline-block;
+    padding-left: 5%;
+    color:  #b3b3b3d5;
+}

@@ -685,39 +685,45 @@ function showToast(message) {
     toast.classList.add("shake")
 
     setTimeout(() => {
-        toast.classList.remove("shake")
+        toast.classList.remove("shake");
+        if( previousMsg !=='Password copied to clipboard !!'){
         toast.textContent = previousMsg;
+        }
     }, 3000);
 }
 
-let isVisible = false;
+let isVisibleMap = {};
 let hideTimeout = null;
 
-function togglePassword() {
-    const pwInput = document.getElementById("login-input-info-data-pw");
+function togglePassword(id) {
+    const pwInput = document.getElementById(id);
 
-    if (!isVisible) {
+    if (!isVisibleMap[id]) {
         pwInput.type = "text";
-        isVisible = true;
+        isVisibleMap[id] = true;
 
         // Copy password to clipboard
         navigator.clipboard.writeText(pwInput.value)
             .then(() => showToast("Password copied to clipboard !!"))
             .catch(err => console.error("Clipboard copy failed:", err));
 
-        // Auto-hide password after 5 seconds
-        hideTimeout = setTimeout(() => {
+            setTimeout(() => {
+                const allInputs = document.querySelectorAll('.login-input-info-data-pw');
+                allInputs.forEach(input => input.type = "password");
+    
+                // Clear visibility flags
+                for (let key in isVisibleMap) {
+                    isVisibleMap[key] = false;
+                }
+            }, 5000);
+        } else {
             pwInput.type = "password";
-            isVisible = false;
-        }, 5000);
-    } else {
-        pwInput.type = "password";
-        isVisible = false;
-        clearTimeout(hideTimeout);
+            isVisibleMap[id] = false;
+        }
     }
-}
 
 
+const vm_login_credentials_ds_cache = [];//Reuse dataset for filtering later on
 
 async function populateVMUserLoginPanel(vmId) {
     if (!vmId ) {
@@ -736,39 +742,31 @@ async function populateVMUserLoginPanel(vmId) {
         }
     
         const data = await response.json();
-        console.log("Fetching Users credential:", data);
-        
-        console.log("Populate user Credentials called.");
-
         const credentials_list = data["credentials_list"]
-        console.log(credentials_list[0].credential_username)
+        vm_login_credentials_ds_cache.length = 0;
+        vm_login_credentials_ds_cache.push(...credentials_list);
+        console.log("Credentials:",vm_login_credentials_ds_cache)
     
         // Check if API response contains the expected keys
         if (data.success) {
-            const credential_username = credentials_list[0].credential_username;
-            const domain_name = credentials_list[0].domain_name
-            const vm_last_logon = credentials_list[0].vm_last_logon
-            const vm_user_password = credentials_list[0].vm_user_password;
+            const parent_div = document.getElementById("Credentials_Dataset");
+            parent_div.innerHTML = ""; // Clear previous entries if needed
 
-            document.getElementById("vm-infobox-content-user-login-name").textContent = credential_username;
-            document.getElementById("login-input-info-data-pw").value = vm_user_password;
-            document.getElementById("vm-infobox-content-user-login-domain").textContent = domain_name;
-            // Format the timestamp
-            const lastLogin = new Date(vm_last_logon);
-            const formattedLogin = lastLogin.toLocaleString();
-            document.getElementById("vm-infobox-content-user-login-lastlogin").textContent = formattedLogin;
+            credentials_list.forEach((credential, index) => {
+                let iDiv= document.createElement('div');
+                let lastLogin = new Date(credential.vm_last_logon);
+                let formattedLogin = lastLogin.toLocaleString();
+                    iDiv.className='vm-infobox-content-user-login-data';
+                let bgColor = `vm-alternate-color-${index%2}`;
 
-            const row_username = document.getElementById("vm-infobox-content-user-login-name");
-/*
-            select.innerHTML = '<option value="">-- Choose a VM --</option>';
-
-            data.vms.forEach(vm => {
-                let option = document.createElement("option");
-                row_username.innerHTML = ``
-                option.textContent = vm.proxmox_vm_name;
-                select.appendChild(option);
+                    iDiv.innerHTML = ` <div  class="vm-infobox-content-login-info-data ${bgColor}">${credential.credential_username}</div>
+                                       <div  class="vm-infobox-content-login-info-data ${bgColor}"><button type="button" class="vm-info-show-pw tooltip" onclick="togglePassword('login-input-info-data-pw-${index}')">👁 <span class="tooltiptext">Copy password to clipboard</span></button><input type="password" id="login-input-info-data-pw-${index}" class="login-input-info-data-pw" value="${credential.vm_user_password}" readonly></div>
+                                       <div  class="vm-infobox-content-login-info-data ${bgColor}">${credential.domain_name}</div>
+                                       <div  class="vm-infobox-content-login-info-login ${bgColor}">${formattedLogin}</div>
+                    `;
+                    parent_div.appendChild(iDiv);
             });
-        */
+        
         }
     } catch (error) {
         console.error("Fetch Error:", error);
@@ -776,3 +774,41 @@ async function populateVMUserLoginPanel(vmId) {
     
 }
 
+function FilterVMUserLoginPanel(filter) {
+    try {
+        let credentials_list_filtered = [];
+
+        if(filter==1){
+         credentials_list_filtered = vm_login_credentials_ds_cache.filter(credential =>
+            credential.domain_name === ".local"
+        );
+        }else if (filter==0){
+         credentials_list_filtered = vm_login_credentials_ds_cache.filter(credential =>
+            credential.domain_name !== ".local"
+        );
+        }else{
+            credentials_list_filtered = vm_login_credentials_ds_cache
+        }
+        console.log("Filtered list:", credentials_list_filtered)
+        const parent_div = document.getElementById("Credentials_Dataset");
+        parent_div.innerHTML = ""; // Clear previous entries
+
+
+        credentials_list_filtered.forEach((credential, index) => {
+            let iDiv= document.createElement('div');
+            let lastLogin = new Date(credential.vm_last_logon);
+            let formattedLogin = lastLogin.toLocaleString();
+                iDiv.className='vm-infobox-content-user-login-data';
+            let bgColor = `vm-alternate-color-${index%2}`;
+                iDiv.innerHTML = ` <div  class="vm-infobox-content-login-info-data ${bgColor}">${credential.credential_username}</div>
+                                   <div  class="vm-infobox-content-login-info-data ${bgColor}"><button type="button" class="vm-info-show-pw tooltip" onclick="togglePassword('login-input-info-data-pw-${index}')">👁 <span class="tooltiptext">Copy password to clipboard</span></button><input type="password" id="login-input-info-data-pw-${index}" class="login-input-info-data-pw" value="${credential.vm_user_password}" readonly></div>
+                                   <div  class="vm-infobox-content-login-info-data ${bgColor}">${credential.domain_name}</div>
+                                   <div  class="vm-infobox-content-login-info-login ${bgColor}">${formattedLogin}</div>
+                `;
+                parent_div.appendChild(iDiv);
+        });
+    } catch (error) {
+        console.error("Filter Error:", error);
+    }
+}
+    

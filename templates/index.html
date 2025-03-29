@@ -140,14 +140,14 @@
             <input type="checkbox" id="vm-infobox-toggle-user" class="vm-toggle-checkbox">
                 <label for="vm-infobox-toggle-user" class="vm-infobox-head" id="vm-infobox-user-header-text">VM User Credentials</label>
                 <label class="vm-infobox-head-ico"><img class="vm-infobox-ico" src="{{ url_for('static', filename='images/vm_credentials_ico.png') }}"></label>
-            <div class="vm-infobox-content-user">
+            <div id = "vm-infobox-content-user" class="vm-infobox-content-user">
                 <div class="vm-infobox-content-user-profile-pic-box">
                     <!-- User info content goes here -->
                         <div class="vm-infobox-content-data-text">
                             <img id="vm-infobox-user-profile-pic" class="vm-infobox-user-profile-pic" src="{{ url_for('static', filename='images/user.png') }}">
                             <div class="vm-infobox-content-user-text">
-                                <div  id="vm-infobox-content-user-text-name" class="vm-infobox-content-user-text-name">Alejandro E. </div>
-                                <div  id="vm-infobox-content-user-text-role" class="vm-infobox-content-user-text-role">My role is Administrator </div>
+                                <div  id="vm-infobox-content-user-text-name" class="vm-infobox-content-user-text-name"></div>
+                                <div  id="vm-infobox-content-user-text-role" class="vm-infobox-content-user-text-role"></div>
                             </div>
                         </div>
                 </div>
@@ -157,13 +157,22 @@
                             <div  class="vm-infobox-content-login-info">Password  </div>
                             <div  class="vm-infobox-content-login-info">Logon Domain    </div>
                             <div  class="vm-infobox-content-login-info">Last login</div>
+                            <div  class="vm-infobox-content-login-info-filter filter_credentials"><img class="vm-filter-ico" src="{{ url_for('static', filename='images/filter_ico.png') }}">
+                                                                                                    <div class="filter_options">
+                                                                                                                                <div class="filter_options_option" onclick="FilterVMUserLoginPanel(2)"><img class="vm-filter-option-ico" src="{{ url_for('static', filename='images/nofilter_ico.png') }}"><span class="vm-filter-option-ico-text">Clear filter</span></div>
+                                                                                                                                <div class="filter_options_option" onclick="FilterVMUserLoginPanel(1)"><img class="vm-filter-option-ico" src="{{ url_for('static', filename='images/local_ico.png') }}"><span class="vm-filter-option-ico-text">Local</span></div>
+                                                                                                                                <div class="filter_options_option" onclick="FilterVMUserLoginPanel(0)"><img class="vm-filter-option-ico" src="{{ url_for('static', filename='images/domain_ico.png') }}"><span class="vm-filter-option-ico-text">Domain</span></div>
+                                                                                                    </div>
+                            </div>
                 </div>
-                <div class="vm-infobox-content-user-login-data">
-                    <!-- User info content goes here -->
-                            <div  id="vm-infobox-content-user-login-name"      class="vm-infobox-content-login-info-data"></div>
-                            <div  id="vm-infobox-content-user-login-pwd"       class="vm-infobox-content-login-info-data"><button type="button" class="vm-info-show-pw tooltip" onclick="togglePassword()">👁 <span class="tooltiptext">Copy password to clipboard</span></button><input type="password" id="login-input-info-data-pw" class="login-input-info-data-pw" placeholder="" autocorrect="off" spellcheck="false"></div>
-                            <div  id="vm-infobox-content-user-login-domain"    class="vm-infobox-content-login-info-data"></div>
-                            <div  id="vm-infobox-content-user-login-lastlogin" class="vm-infobox-content-login-info-data"></div>
+                <div id = "Credentials_Dataset" class="vm-Credentials-Dataset">
+                    <div class="vm-infobox-content-user-login-data">
+                        <!-- User info content goes here -->
+                                <div class="vm-infobox-content-login-info-data"></div>
+                                <div class="vm-infobox-content-login-info-data"><button type="button" class="vm-info-show-pw tooltip" onclick="togglePassword()"><span class="tooltiptext">Copy password to clipboard</span></button><input type="password" id="login-input-info-data-pw" class="login-input-info-data-pw" placeholder="" autocorrect="off" spellcheck="false"></div>
+                                <div class="vm-infobox-content-login-info-data"></div>
+                                <div class="vm-infobox-content-login-info-login"></div>
+                    </div>
                 </div>
             </div>
         </div>
