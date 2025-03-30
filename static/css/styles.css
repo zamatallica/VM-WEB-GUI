@@ -192,6 +192,20 @@ button:hover {
     animation-timing-function: ease-in-out;
   }
 
+  .top-divider{
+    position: relative;
+    width:100%;
+    height:50px;
+    left:-11%; 
+  }
+  .span-select-Console{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 24px;
+    color: #ffffffb7;
+    padding-right: 5px;
+    padding-top: 5px;
+  }
+
 /* Logout User */
 .logout-btn {
     position: absolute;
@@ -529,7 +543,6 @@ _________            .___         .___  _______/\  ________                .__  
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 .container{
     padding-right: 1%;
-
 }
 .vm-infobox-container {
     display: flex;
@@ -763,6 +776,7 @@ _________            .___         .___  _______/\  ________                .__  
     top:30px;
     border-radius: 5px;
     right:0;
+    overflow-y: auto;
 }
 #vm-infobox-toggle-user {
     display: none;
@@ -780,6 +794,7 @@ _________            .___         .___  _______/\  ________                .__  
     flex-direction: column;
     align-items: flex-end; /* Ensures right alignment */
     width:22%;
+    height:max-content;
     right: 10px;
     top: 36.7%;
     transition: top 0.3s ease-in-out; /* Smooth animation when repositioning */
@@ -797,7 +812,6 @@ _________            .___         .___  _______/\  ________                .__  
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
     background-color: #00000044;
-
 }
 .vm-infobox-content-user-profile{
     position:relative;
@@ -999,11 +1013,10 @@ button.vm-info-show-pw{
     position: relative;
     display: inline-block;
     cursor: pointer;
-    z-index: 9999;
   }
   
   .filter_credentials .filter_options {
-    visibility: visible;
+    visibility: hidden;
     background-color: #292828;
     color: #ffffff;
     width: 120px;
@@ -1016,7 +1029,6 @@ button.vm-info-show-pw{
     font-size: 12px;
     position: absolute;
     z-index: 9999; /* HIGHER than other nearby elements */
-    bottom: -210%; /* position above the trigger element */
     left: 50%;
     transform: translateX(-100%);
     opacity: 0;
@@ -1027,8 +1039,7 @@ button.vm-info-show-pw{
   .filter_credentials:hover .filter_options {
     visibility: visible;
     opacity: 1;
-    z-index: 9999;
-    
+    z-index: 9999; /* HIGHER than other nearby elements */
   } 
 
   .filter_options_option{
@@ -1055,4 +1066,86 @@ button.vm-info-show-pw{
     display: inline-block;
     padding-left: 5%;
     color:  #b3b3b3d5;
+}
+
+/* -----INFO USER PANEL--------------------------------------------------------------------------------------- */
+/* USER VM SEARCH PANEL */
+.vm-infobox-uservms-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Ensures right alignment */
+    width:22%;
+    right: 10px;
+    top: 65%;
+    transition: top 0.3s ease-in-out; /* Smooth animation when repositioning */
+    position: absolute;
+    right: 15px;
+}
+#vm-infobox-toggle-uservms {
+    display: none;
+}
+#vm-infobox-toggle-uservms:checked + .vm-infobox-head-uservms:after {
+    transform: rotate(-90deg);
+}
+#vm-infobox-toggle-uservms:checked ~ .vm-infobox-uservms-container {
+    max-height: 100%;
+    opacity: 0;
+    top: 23px;
+}
+
+.vm-infobox-head-uservms{
+    display:inline-block;
+    width:95%;
+    top:0;
+    right:0;
+    height:fit-content;
+    box-sizing: border-box;
+    position:absolute;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.vm-infobox-head-uservms:after{
+    position: absolute;
+    content:"keyboard_arrow_down";
+    font-family: "Material Icons";
+    top: 38%;
+    opacity: 80%;
+    right:10px;
+    font-size: 20px;
+    transition: all 0.3s ease;
+}
+.vm-infobox-content-vm-search {
+    width:  90%; /* Inherit width from container */
+    height: -100%;
+    border: 1px solid #ffffff2a;
+    color: #929292c7;
+    background: linear-gradient(to bottom, #2b2b2bcb, #1d1c1c);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+    font-weight: bold;
+    text-align: left;
+    line-height: 33px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.7);
+    display:inline-block;
+    gap: 10px;
+    padding: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    position: absolute;
+    top:30px;
+    border-radius: 5px;
+    right:0;
+    overflow-y: auto;
+}
+#vm-infobox-toggle-uservms {
+    display: none;
+}
+#vm-infobox-toggle-uservms:checked + .vm-infobox-head-uservms:after {
+    transform: rotate(-90deg);
+}
+#vm-infobox-toggle-uservms:checked ~ .vm-infobox-content-vm-search {
+    max-height: 100%;
+    opacity: 0;
+    top: 23px;
 }

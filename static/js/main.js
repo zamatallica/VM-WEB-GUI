@@ -623,24 +623,43 @@ if (vmSelect && vmSelectBtn) {
     const vmInfoToggle = document.getElementById("vm-infobox-toggle");
     const vmInfoContent = document.querySelector(".vm-infobox-content");
     const userPanel = document.querySelector(".vm-infobox-user-container");
+    const uservmsPanel = document.querySelector(".vm-infobox-uservms-container");
+    const vmCredentialsToggle = document.getElementById("vm-infobox-toggle-user");
 
     function adjustUserPanelPosition() {
         // Get the height of the VM info content
         const contentHeight = vmInfoContent.scrollHeight; 
         
         if (vmInfoToggle.checked) {
-            userPanel.style.top = "100px"; // Adjust as needed
+           userPanel.style.top = "100px"; // Adjust as needed
+            uservmsPanel.style.top = `${userPanel.scrollHeight + 110}px`;
         } else {
-             userPanel.style.top = `${contentHeight + 470}px`
+            userPanel.style.top = `${contentHeight + 480}px`; //Initial Position, Initializes user credential panel on this position.
+             uservmsPanel.style.top = `${userPanel.scrollHeight + 810}px`;
             if (contentHeight != 0){
                 userPanel.style.top = `${contentHeight + 110}px`; // Default collapsed position
+                uservmsPanel.style.top = `${userPanel.scrollHeight + 500}px`;
             }
         }
+
     }
 
     // Listen for changes in the checkbox toggle
     vmInfoToggle.addEventListener("change", adjustUserPanelPosition);
+    vmCredentialsToggle.addEventListener("change", adjustUserPanelPosition);
 
+    //Not my proudest moment,  it's hacky but it gets the job done "( – ⌓ – )=3 (4 hrs trying to get it done the "right way" was more than enough to break my will.)
+    const targetDiv = document.getElementById("Credentials_Dataset");
+    //We listen for changes on the size of the vm user credentials result set so we triger the panel size adjustemen dynamically.
+    const observer = new MutationObserver((mutationsList, observer) => {
+    for (let mutation of mutationsList) {
+        adjustUserPanelPosition();
+    }
+    });
+    // Observer config – adjust as needed
+    observer.observe(targetDiv, {
+    childList: true,
+    });
     // Run the function once to set the initial state
     adjustUserPanelPosition();
 });
