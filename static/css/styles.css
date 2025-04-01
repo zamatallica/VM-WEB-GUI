@@ -770,13 +770,11 @@ _________            .___         .___  _______/\  ________                .__  
     display:inline-block;
     gap: 10px;
     padding: 10px;
-    overflow: hidden;
     transition: all 0.3s ease-in-out;
     position: absolute;
     top:30px;
     border-radius: 5px;
     right:0;
-    overflow-y: auto;
 }
 #vm-infobox-toggle-user {
     display: none;
@@ -842,7 +840,6 @@ _________            .___         .___  _______/\  ________                .__  
     text-align:center;
     padding: 5%;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
 }
 .vm-infobox-content-user-text-name{
     font-size: 18px;
@@ -886,6 +883,7 @@ _________            .___         .___  _______/\  ________                .__  
 }
 .vm-infobox-content-login-info-filter{
     cursor:pointer;
+    position: relative;
 }
 .vm-Credentials-Dataset{
     white-space: nowrap;           /* Prevents text wrapping */            /* Hides overflow */
@@ -1020,6 +1018,7 @@ button.vm-info-show-pw{
     background-color: #292828;
     color: #ffffff;
     width: 120px;
+    height: max-content;
     border-color:   #f77d1a8a;
     border-top: 1px solid #e97509b7;
     box-shadow: 0 4px 6px rgba(0, 1, 1, 0.3);
@@ -1034,6 +1033,7 @@ button.vm-info-show-pw{
     opacity: 0;
     transition: opacity 0.3s;
     white-space: nowrap;
+    
   }
 
   .filter_credentials:hover .filter_options {
@@ -1121,7 +1121,7 @@ button.vm-info-show-pw{
     border: 1px solid #ffffff2a;
     color: #929292c7;
     background: linear-gradient(to bottom, #2b2b2bcb, #1d1c1c);
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Arial, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: small;
     font-weight: bold;
     text-align: left;
@@ -1130,13 +1130,11 @@ button.vm-info-show-pw{
     display:inline-block;
     gap: 10px;
     padding: 10px;
-    overflow: hidden;
     transition: all 0.3s ease-in-out;
     position: absolute;
     top:30px;
     border-radius: 5px;
     right:0;
-    overflow-y: auto;
 }
 #vm-infobox-toggle-uservms {
     display: none;
@@ -1149,3 +1147,134 @@ button.vm-info-show-pw{
     opacity: 0;
     top: 23px;
 }
+.vm-searchbox-ico{
+    top: 53%;
+    padding: 0px 10px;
+    position: absolute;
+    height: 25px;
+    width: 25px;
+    transition: opacity 0.3s ease;
+}
+
+.vm-infobox-searchvm-box{
+        width: 250px;
+        padding: 8px 40px;
+        border: 1px solid #ff7738d0;
+        border-radius: 20px;
+        background-color: #1e1e1e;
+        color: #8a8a8a;
+        font-size: 14px;
+        outline: none;
+        opacity: .7;
+        transition: border-all 0.3s ease;
+    }
+      .vm-infobox-searchvm-box:focus{
+        border-bottom-color: #ffa34dbe;
+        border-left: 0px;
+        opacity: 1;
+      }
+      .vm-infobox-searchvm-box::placeholder {
+        color: #aaaaaa;
+      }
+
+      .vm-admin-search-ico{
+        height: 18px;
+        top:8%;
+        right: 50%;
+    }
+      
+    .vm-infobox-content-search-header{
+        position:relative;
+        display:inline-block;
+        width: 100%;
+        text-align:left;
+        padding-left: 5%;
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        white-space: nowrap;
+        right:0;
+    }
+    .vm-infobox-content-user-search-info{
+        position:relative;
+        display:grid;
+        height: 35px;
+        grid-template-columns: 4fr 7.5fr .5fr; /* 4 columns */
+        gap: 5px;
+        top:0;
+        left:0%;
+        width:100.5%;
+        color: #a5a5a5de;
+        border-bottom: 1px solid #fd821e4b;
+        background-color: #3a393965;
+        font-family:'Arial, sans-serif';
+        font-size: x-large;
+        font-weight: 500;
+    }
+    .vm-infobox-content-search-header-filter{
+        cursor:pointer;
+        position: relative;
+        display:inline-block;
+        width:100%;
+        top:5%;
+        text-align:right;
+        right:60%;
+    }
+    .vm-admin-search-ico{
+        height: 20px;
+        top:10%;
+        right: 0px;
+    }
+
+    .filter_search {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .filter_search .filter_options {
+        visibility: hidden;
+        background-color: #292828;
+        color: #ffffff;
+        width: 120px;
+        height: max-content;
+        border-color:   #f77d1a8a;
+        border-top: 1px solid #e97509b7;
+        box-shadow: 0 4px 6px rgba(0, 1, 1, 0.3);
+        text-align: left;
+        padding: 5px 8px;
+        border-radius: 4px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 12px;
+        position: absolute;
+        z-index: 9999; /* HIGHER than other nearby elements */
+        left: 100%;
+        transform: translateX(-100%);
+        opacity: 0;
+        transition: opacity 0.3s;
+        white-space: nowrap;
+        
+      }
+      .filter_search:hover .filter_options {
+        visibility: visible;
+        opacity: 1;
+        z-index: 9999; /* HIGHER than other nearby elements */
+      } 
+    
+      .filter_search_option{
+        color: rgb(255, 255, 255);
+        border-radius: 4px; /* Rounded edges */
+        transition: all 0.3s ease;
+        display: right;
+    }
+    
+      .filter_search_option:hover {
+        background: rgba(255, 255, 255, 0.11);
+        color: rgb(255, 255, 255);
+    }
+
+    .vm-admin-search-ico:hover {
+        transform: scale(1.2);
+        color: #ff9955;
+    }
+    
+
+

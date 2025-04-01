@@ -618,7 +618,7 @@ if (vmSelect && vmSelectBtn) {
 }
 });
 
-    //INFO PANEL Repositioning
+    //INFO PANEL Repositioning(!!! WARNING THE SHITIEST CODE YOU'LL EVER SEEN BELOW!!!!!!)
     document.addEventListener("DOMContentLoaded", function () {
     const vmInfoToggle = document.getElementById("vm-infobox-toggle");
     const vmInfoContent = document.querySelector(".vm-infobox-content");
@@ -631,19 +631,28 @@ if (vmSelect && vmSelectBtn) {
         const contentHeight = vmInfoContent.scrollHeight; 
         
         if (vmInfoToggle.checked) {
-           userPanel.style.top = "100px"; // Adjust as needed
+            userPanel.style.top = "100px"; // Adjust as needed
             uservmsPanel.style.top = `${userPanel.scrollHeight + 110}px`;
-        } else {
-            userPanel.style.top = `${contentHeight + 480}px`; //Initial Position, Initializes user credential panel on this position.
-             uservmsPanel.style.top = `${userPanel.scrollHeight + 810}px`;
-            if (contentHeight != 0){
-                userPanel.style.top = `${contentHeight + 110}px`; // Default collapsed position
-                uservmsPanel.style.top = `${userPanel.scrollHeight + 500}px`;
+            if(vmCredentialsToggle.checked){
+                uservmsPanel.style.top = "135px";
             }
+        } else {
+                 userPanel.style.top = `${contentHeight + 480}px`; //Initial Position, Initializes user credential panel on this position.
+                if (contentHeight != 0){
+                    userPanel.style.top = `${contentHeight + 110}px`; // Default collapsed position
+                }
+                const credentialsHeight = userPanel.scrollHeight; 
+                if (vmCredentialsToggle.checked) {
+                    uservmsPanel.style.top = `${credentialsHeight + 150}px`;
+                } else {
+                    uservmsPanel.style.top = `${credentialsHeight+ 810}px`;
+                    if (credentialsHeight != 0){
+                        uservmsPanel.style.top = `${credentialsHeight +contentHeight+ 125}px`;
+                    }
+                }
+    
         }
-
     }
-
     // Listen for changes in the checkbox toggle
     vmInfoToggle.addEventListener("change", adjustUserPanelPosition);
     vmCredentialsToggle.addEventListener("change", adjustUserPanelPosition);
@@ -679,6 +688,8 @@ function cleanupVMInfoPanels() {
     document.getElementById('vm-infobox-vmhostname').textContent = "Hostname:";
     document.getElementById('vm-infobox-user-header-cpu-mem').textContent = "";
     document.getElementById('vm-infobox-OS-icon').src= "/static/images/os_default.png";
+    const parent_div = document.getElementById("Credentials_Dataset");
+    parent_div.innerHTML = ""; // Clear previous entries if needed
 
     // Clear chart data before destroy
     if (cpuChart) {

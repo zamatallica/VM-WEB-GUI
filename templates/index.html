@@ -177,34 +177,33 @@
             </div>
         </div>
     </div>
-        <!-- User VMs search INFO PANEL -->
+        <!-- User VMs search PANEL -->
         <div class="vm-infobox-uservms-container">
             <div class="vm-infobox-header">
                 <input type="checkbox" id="vm-infobox-toggle-uservms" class="vm-toggle-checkbox">
-                    <label for="vm-infobox-toggle-uservms" class="vm-infobox-head-uservms" id="vm-infobox-user-header-text">User VMs</label>
+                    <label for="vm-infobox-toggle-uservms" class="vm-infobox-head-uservms" id="vm-infobox-user-header-text">User VM Administration</label>
                     <label class="vm-infobox-head-ico"><img class="vm-infobox-ico" src="{{ url_for('static', filename='images/user_vms_ico.png') }}"></label>
                 <div id = "vm-infobox-content-vm-search" class="vm-infobox-content-vm-search">
                     <div class="vm-infobox-content-user-profile-pic-box">
                         <!-- User info content goes here -->
                             <div class="vm-infobox-content-data-text">
-                                <input type="searh" placeholder="search..."></input>
                                 <div class="vm-infobox-content-user-text">
-                                    <div  id="vm-infobox-content-user-text-name" class="vm-infobox-content-user-text-name"></div>
+                                    <div  id="vm-infobox-content-user-text-name" class="vm-infobox-content-user-text-name">     
+                                        <img class="vm-searchbox-ico" src="{{ url_for('static', filename='images/glass_ico.png') }}">                           
+                                            <input type="searh" class="vm-infobox-searchvm-box" placeholder="search..." ></input></div>
                                     <div  id="vm-infobox-content-user-text-role" class="vm-infobox-content-user-text-role"></div>
                                 </div>
                             </div>
                     </div>
-                    <div class="vm-infobox-content-user-login-info">
+                    <div class="vm-infobox-content-user-search-info">
                         <!-- User info content goes here -->
-                                <div  class="vm-infobox-content-login-info">Username  </div>
-                                <div  class="vm-infobox-content-login-info">Password  </div>
-                                <div  class="vm-infobox-content-login-info">Logon Domain    </div>
-                                <div  class="vm-infobox-content-login-info">Last login</div>
-                                <div  class="vm-infobox-content-login-info-filter filter_credentials"><img class="vm-filter-ico" src="{{ url_for('static', filename='images/filter_ico.png') }}">
+                                <div  class="vm-infobox-content-search-header"><img class="vm-admin-search-ico" src="{{ url_for('static', filename='images/menu_ico.png') }}"></div>
+                                <div  class="vm-infobox-content-search-header">My Machines</div>
+                                <div  class="vm-infobox-content-search-header-filter filter_search"><img class="vm-admin-search-ico" src="{{ url_for('static', filename='images/filter_settings_ico.png') }}">
                                                                                                         <div class="filter_options">
-                                                                                                                                    <div class="filter_options_option" onclick="FilterVMUserLoginPanel(2)"><img class="vm-filter-option-ico" src="{{ url_for('static', filename='images/nofilter_ico.png') }}"><span class="vm-filter-option-ico-text">Clear filter</span></div>
-                                                                                                                                    <div class="filter_options_option" onclick="FilterVMUserLoginPanel(1)"><img class="vm-filter-option-ico" src="{{ url_for('static', filename='images/local_ico.png') }}"><span class="vm-filter-option-ico-text">Local</span></div>
-                                                                                                                                    <div class="filter_options_option" onclick="FilterVMUserLoginPanel(0)"><img class="vm-filter-option-ico" src="{{ url_for('static', filename='images/domain_ico.png') }}"><span class="vm-filter-option-ico-text">Domain</span></div>
+                                                                                                                                    <div class="filter_search_option" onclick="FilterVMUserLoginPanel(2)"><img class="vm-filter-option-ico" src="{{ url_for('static', filename='images/nofilter_ico.png') }}"><span class="vm-filter-option-ico-text">Clear filter</span></div>
+                                                                                                                                    <div class="filter_search_option" onclick="FilterVMUserLoginPanel(1)"><img class="vm-filter-option-ico" src="{{ url_for('static', filename='images/local_ico.png') }}"><span class="vm-filter-option-ico-text">Local</span></div>
+                                                                                                                                    <div class="filter_search_option" onclick="FilterVMUserLoginPanel(0)"><img class="vm-filter-option-ico" src="{{ url_for('static', filename='images/domain_ico.png') }}"><span class="vm-filter-option-ico-text">Domain</span></div>
                                                                                                         </div>
                                 </div>
                     </div>
