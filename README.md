@@ -3,6 +3,10 @@
 ![full_infrastructure_architecture_wSQL](https://github.com/user-attachments/assets/317eae37-cf0d-4b72-af7e-5b0e04ada3cd)
 ![image](https://github.com/user-attachments/assets/29f7606b-3e49-40db-bec7-87742b4880db)
 ![image](https://github.com/user-attachments/assets/37034d96-c879-4170-81e3-0d2a200dfcba)
+![image](https://github.com/user-attachments/assets/08ab8a6b-48ef-4227-b088-68e3059070b6)
+![image](https://github.com/user-attachments/assets/53ca2074-4f35-4bb8-ba12-fc3a24f22d35)
+
+
 
 
 
