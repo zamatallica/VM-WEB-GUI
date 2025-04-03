@@ -803,8 +803,8 @@ async function populateVMUserLoginPanel(vmId) {
     }      
     
 }
-
-function FilterVMUserLoginPanel(filter) {
+//Reuses cached data from vm_login_credentials_ds_cache
+function FilterVMUserLoginPanel() {
     try {
         let credentials_list_filtered = [];
 
@@ -842,3 +842,56 @@ function FilterVMUserLoginPanel(filter) {
     }
 }
     
+async function PupulateUserVMAdministration() {
+    try {
+        const response = await fetch(`api/get-vm-user-search-machines`, {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const vm_list = data["VMs_list"];
+        console.log("VMs list:", vm_list);
+
+        if (data.success) {
+            const parent_div = document.getElementById("vm_search_dataset");
+            parent_div.innerHTML = "";
+
+            vm_list.forEach((vm, index) => {
+                let iDiv = document.createElement('div');
+                iDiv.className = 'vm-infobox-content-search-data';
+
+                let logonstatus = vm.status == 'running' ? 'Logon to machine' : 'Unavailable for logon at the moment';
+                let cursor = vm.status == 'running' ? 'pointer' : 'default';
+
+
+                iDiv.innerHTML = `
+                    <div class="vm-infobox-content-search-container-data">
+                        <img class="vm-admin-search-results-ico" title="${logonstatus}" cursor="${cursor}" src="/static/${vm.logon_status_ico || 'images/logon_ico.png'}">
+                    </div>
+                    <div class="vm-infobox-content-search-info-data">
+                        <div class="search-result-server">${vm.proxmox_vm_name}</div>
+                        <div class="search-result-function">${vm.vm_function}</div>
+                        <div class="search-result-status">${vm.status}</div>
+                    </div>
+                    <div class="vm-infobox-content-search-container-data">
+                        <img class="vm-admin-search-OS-ico" src="/static/${vm.os_logo_img_path || 'images/os_default.png'}">
+                    </div>
+                    <div class="vm-infobox-content-search-container-data">
+                        <img class="vm-admin-search-favorite-ico" src="/static/${vm.isFavorite}">
+                    </div>
+                    <div class="vm-infobox-content-search-container-data">
+                        <img class="vm-admin-search-more-ico" src="/static/images/more_ico.png">
+                    </div>
+                `;
+                parent_div.appendChild(iDiv);
+            });
+        }
+    } catch (error) {
+        console.error("Fetch Error:", error);
+    }
+}

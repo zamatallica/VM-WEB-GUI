@@ -1148,16 +1148,21 @@ button.vm-info-show-pw{
     top: 23px;
 }
 .vm-searchbox-ico{
-    top: 53%;
+    display: flex;
+    top: 47%;
     padding: 0px 10px;
     position: absolute;
-    height: 25px;
-    width: 25px;
+    height: 24px;
+    width: 24px;
     transition: opacity 0.3s ease;
 }
 
 .vm-infobox-searchvm-box{
-        width: 250px;
+        display: flex;
+        flex-shrink: 1;
+        align-items: center;
+        align-content: center;
+        width: 100%;
         padding: 8px 40px;
         border: 1px solid #ff7738d0;
         border-radius: 20px;
@@ -1166,6 +1171,7 @@ button.vm-info-show-pw{
         font-size: 14px;
         outline: none;
         opacity: .7;
+        padding-bottom: 2%;
         transition: border-all 0.3s ease;
     }
       .vm-infobox-searchvm-box:focus{
@@ -1176,30 +1182,19 @@ button.vm-info-show-pw{
       .vm-infobox-searchvm-box::placeholder {
         color: #aaaaaa;
       }
-
-      .vm-admin-search-ico{
-        height: 18px;
-        top:8%;
-        right: 50%;
-    }
       
     .vm-infobox-content-search-header{
-        position:relative;
-        display:inline-block;
-        width: 100%;
-        text-align:left;
-        padding-left: 5%;
+        display:flex;
+        justify-content: left;
+        align-content: center;
         font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         white-space: nowrap;
-        right:0;
     }
     .vm-infobox-content-user-search-info{
         position:relative;
         display:grid;
         height: 35px;
         grid-template-columns: 4fr 7.5fr .5fr; /* 4 columns */
-        gap: 5px;
-        top:0;
         left:0%;
         width:100.5%;
         color: #a5a5a5de;
@@ -1212,17 +1207,20 @@ button.vm-info-show-pw{
     .vm-infobox-content-search-header-filter{
         cursor:pointer;
         position: relative;
-        display:inline-block;
+        display:flex;
         width:100%;
-        top:5%;
+        align-content: center;
         text-align:right;
         right:60%;
+        top:-10%;
     }
     .vm-admin-search-ico{
         height: 20px;
-        top:10%;
-        right: 0px;
+        position:relative;
+        top: 15%;
+        left:5%;
     }
+
 
     .filter_search {
         position: relative;
@@ -1276,5 +1274,90 @@ button.vm-info-show-pw{
         color: #ff9955;
     }
     
+    .vm-admin-search-results-ico{
+        height: 44px;
+        position:flex;
+        top: 15%;
+    }
+
+    .vm-infobox-content-search-data
+    {
+        position:relative;
+        display:flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 80px;
+        grid-template-columns: 4fr 4fr 4fr 4fr; /* 4 columns */
+        top:0;
+        width:100.5%;
+        color: #b8b8b8c4;
+        border-bottom: 1px solid #77777771;
+        background-color: #1d1c1c65;
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: 200;
+    }
+
+    .vm-search-Dataset{
+        white-space: nowrap;           /* Prevents text wrapping */            /* Hides overflow */
+        text-overflow: ellipsis;       /* Adds '...' to overflowed text */
+        max-width: 100%;               /* Ensures content stays within bounds */
+        box-sizing: border-box;  
+        overflow-y: scroll;
+        overflow-x: hidden;
+        height: 240px;
+    }
+    .vm-infobox-content-search-container-data{
+        position:relative;
+        display:flex;
+        text-align:left;
+        padding-left: 2%;
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+    }
+
+    .vm-infobox-content-search-info-data{
+        display:flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: left;
+        transform: translateY(-4px);
+    }
+
+    .search-result-server{
+        height: 23px;
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: 600;
+        color: #c56619;
+        font-size:25px;
+    }
+    .search-result-function{
+        height: 23px;
+        font-size: 20px;
+        font-weight: 500;
+        color: #999999;
+    }
+    .search-result-status{
+        height: 23px;
+        font-size: 13px;
+        font-weight: 300;
+    }
+
+    .vm-admin-search-OS-ico{
+        height: 44px;
+        position:flex;
+        top: 15%;
+        opacity: .3;
+    }
+    .vm-admin-search-favorite-ico{
+        height: 20px;
+        position:flex;
+        top: 15%;
+    }
+    .vm-admin-search-more-ico{
+        height: 22px;
+        position:flex;
+        top: 15%;
+    }
 
 

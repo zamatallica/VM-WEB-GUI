@@ -408,6 +408,55 @@ def get_vm_user_credentials():
         except Exception as e:
             return jsonify({'success': False, 'message': str(e), 'user_id': user_id}), 500
 
+@app.route('/api/get-vm-user-search-machines', methods=['GET'])
+def get_vm_user_search_machines():
+        user_id = None
+        conn = None
+        vm_id = None
+
+        if not current_user.is_authenticated:
+            return redirect(url_for('unauthorized'))
+        
+        if not vm_id:
+            vm_id=None
+
+        try:
+            user_id = current_user.id
+            if not user_id:
+                return jsonify({'success': False, 'message': 'Unauthorized'}), 401
+            
+            conn = get_db_connection()
+            if not conn:
+                return jsonify(success=False, message="Database connection failed"), 500
+                    
+            with conn.cursor() as cursor:
+                ##EXEC [dbo].[usp_search_user_vms_backend] 1,  NULL  , 10,  0
+                cursor.execute("{CALL usp_search_user_vms_backend(?, NULL, 10, 0)}", (user_id))
+                vms_list = cursor.fetchall()
+
+            if not vms_list:
+                return jsonify({'success': False, 'message': 'No VMs found'}), 404
+
+            vms_list_results = []
+            for vms in vms_list:
+                rcount, proxmox_vm_id, vm_name, os_name, os_version, status, logon_status_ico, os_logo, isFav, function = vms
+                vms_list_results.append({
+                    'rcount' : rcount,
+                    'proxmox_vm_id': proxmox_vm_id,
+                    'proxmox_vm_name': vm_name,
+                    'os_name': os_name,
+                    'os_version': os_version,
+                    'status': status,
+                    'logon_status_ico':logon_status_ico,
+                    'os_logo_img_path': os_logo,
+                    'isFavorite': isFav,
+                    'vm_function': function,
+                })
+            return jsonify({'success': True, 'VMs_list': vms_list_results})
+        
+        except Exception as e:
+            return jsonify({'success': False, 'message': str(e), 'user_id': user_id}), 500
+
         finally:
             if conn:
                 conn.close()
