@@ -421,6 +421,9 @@ def get_vm_user_search_machines():
             vm_id=None
 
         try:
+            
+            page = request.args.get('page', '')
+            size = request.args.get('size', '')
             user_id = current_user.id
             if not user_id:
                 return jsonify({'success': False, 'message': 'Unauthorized'}), 401
@@ -431,7 +434,8 @@ def get_vm_user_search_machines():
                     
             with conn.cursor() as cursor:
                 ##EXEC [dbo].[usp_search_user_vms_backend] 1,  NULL  , 10,  0
-                cursor.execute("{CALL usp_search_user_vms_backend(?, NULL, 10, 0)}", (user_id))
+                ##cursor.execute("{CALL usp_search_user_vms_backend(?, NULL, 10, 0)}", (user_id))
+                cursor.execute("{CALL usp_search_user_vms_backend_test_DELETE(?, NULL, ?, ?)}", (user_id,size,page))
                 vms_list = cursor.fetchall()
 
             if not vms_list:

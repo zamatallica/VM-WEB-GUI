@@ -804,7 +804,7 @@ async function populateVMUserLoginPanel(vmId) {
     
 }
 //Reuses cached data from vm_login_credentials_ds_cache
-function FilterVMUserLoginPanel() {
+function FilterVMUserLoginPanel(filter) {
     try {
         let credentials_list_filtered = [];
 
@@ -842,9 +842,18 @@ function FilterVMUserLoginPanel() {
     }
 }
     
+let isLoading = false;
+let currentPage = 0;
+const pageSize = 10;
+
 async function PupulateUserVMAdministration() {
+    if (isLoading) return; // Prevent duplicate calls
+    isLoading = true;
+
     try {
-        const response = await fetch(`api/get-vm-user-search-machines`, {
+        console.log("Fetching Page:", currentPage);
+
+        const response = await fetch(`/api/get-vm-user-search-machines?page=${currentPage}&size=${pageSize}`, {
             method: 'GET',
             credentials: 'include'
         });
@@ -855,23 +864,21 @@ async function PupulateUserVMAdministration() {
 
         const data = await response.json();
         const vm_list = data["VMs_list"];
-        console.log("VMs list:", vm_list);
 
-        if (data.success) {
+        if (data.success && vm_list.length > 0) {
             const parent_div = document.getElementById("vm_search_dataset");
-            parent_div.innerHTML = "";
+            showPageIndicator(currentPage); // Show page number
 
             vm_list.forEach((vm, index) => {
-                let iDiv = document.createElement('div');
+                const iDiv = document.createElement('div');
                 iDiv.className = 'vm-infobox-content-search-data';
 
-                let logonstatus = vm.status == 'running' ? 'Logon to machine' : 'Unavailable for logon at the moment';
-                let cursor = vm.status == 'running' ? 'pointer' : 'default';
-
+                const logonstatus = vm.status === 'running' ? 'Logon to machine' : 'Unavailable for logon';
+                const statusCSS = vm.status === 'running' ? 'vm-admin-search-results-ico-hover' : '';
 
                 iDiv.innerHTML = `
                     <div class="vm-infobox-content-search-container-data">
-                        <img class="vm-admin-search-results-ico" title="${logonstatus}" cursor="${cursor}" src="/static/${vm.logon_status_ico || 'images/logon_ico.png'}">
+                        <img class="vm-admin-search-results-ico ${statusCSS}" title="${logonstatus}" src="/static/${vm.logon_status_ico || 'images/logon_ico.png'}">
                     </div>
                     <div class="vm-infobox-content-search-info-data">
                         <div class="search-result-server">${vm.proxmox_vm_name}</div>
@@ -888,10 +895,39 @@ async function PupulateUserVMAdministration() {
                         <img class="vm-admin-search-more-ico" src="/static/images/more_ico.png">
                     </div>
                 `;
+
                 parent_div.appendChild(iDiv);
             });
+
+            currentPage++; // Only increment if data returned
+        } else {
+            console.log("No more data to load.");
         }
     } catch (error) {
         console.error("Fetch Error:", error);
+    } finally {
+        isLoading = false;
     }
 }
+
+// Attach infinite scroll listener
+document.getElementById("vm_search_dataset").addEventListener("scroll", function () {
+    const container = this;
+    if (container.scrollTop + container.clientHeight >= container.scrollHeight - 10) {
+        PupulateUserVMAdministration();
+    }
+});
+
+function showPageIndicator(page) {
+    const indicator = document.getElementById('page-indicator');
+    indicator.textContent = `Page ${page + 1}`; // Pages start at 0
+    indicator.style.opacity = 1;
+
+    clearTimeout(indicator._hideTimer);
+    indicator._hideTimer = setTimeout(() => {
+        indicator.style.opacity = 0;
+    }, 1500);
+}
+
+//Initial call on load
+PupulateUserVMAdministration();
