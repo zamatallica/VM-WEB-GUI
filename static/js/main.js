@@ -691,6 +691,13 @@ function cleanupVMInfoPanels() {
     const parent_div = document.getElementById("Credentials_Dataset");
     parent_div.innerHTML = ""; // Clear previous entries if needed
 
+    currentPage=0 //reset current page on Search Panel
+    const parent_div2 = document.getElementById("vm_search_dataset");
+    parent_div2.innerHTML = ""; // Clear previous entries 
+    PupulateUserVMAdministration(); //Repopulate if inital page was first page so it wont appear cleaned up upon login back.
+
+
+
     // Clear chart data before destroy
     if (cpuChart) {
         cpuChart.data.datasets.forEach(ds => ds.data = []);
@@ -790,7 +797,7 @@ async function populateVMUserLoginPanel(vmId) {
                 let bgColor = `vm-alternate-color-${index%2}`;
 
                     iDiv.innerHTML = ` <div  class="vm-infobox-content-login-info-data ${bgColor}">${credential.credential_username}</div>
-                                       <div  class="vm-infobox-content-login-info-data ${bgColor}"><button type="button" class="vm-info-show-pw tooltip" onclick="togglePassword('login-input-info-data-pw-${index}')">👁 <span class="tooltiptext">Copy password to clipboard</span></button><input type="password" id="login-input-info-data-pw-${index}" class="login-input-info-data-pw" value="${credential.vm_user_password}" readonly></div>
+                                       <div  class="vm-infobox-content-login-info-data ${bgColor}"><button type="button" class="vm-info-show-pw tooltip" onclick="togglePassword('login-input-info-data-pw-${index}')"><img class="view-ico" src='static/images/view-ico.svg') }}"><span class="tooltiptext">Copy password to clipboard</span></button><input type="password" id="login-input-info-data-pw-${index}" class="login-input-info-data-pw" value="${credential.vm_user_password}" readonly></div>
                                        <div  class="vm-infobox-content-login-info-data ${bgColor}">${credential.domain_name}</div>
                                        <div  class="vm-infobox-content-login-info-login ${bgColor}">${formattedLogin}</div>
                     `;
@@ -831,7 +838,7 @@ function FilterVMUserLoginPanel(filter) {
                 iDiv.className='vm-infobox-content-user-login-data';
             let bgColor = `vm-alternate-color-${index%2}`;
                 iDiv.innerHTML = ` <div  class="vm-infobox-content-login-info-data ${bgColor}">${credential.credential_username}</div>
-                                   <div  class="vm-infobox-content-login-info-data ${bgColor}"><button type="button" class="vm-info-show-pw tooltip" onclick="togglePassword('login-input-info-data-pw-${index}')">👁 <span class="tooltiptext">Copy password to clipboard</span></button><input type="password" id="login-input-info-data-pw-${index}" class="login-input-info-data-pw" value="${credential.vm_user_password}" readonly></div>
+                                   <div  class="vm-infobox-content-login-info-data ${bgColor}"><button type="button" class="vm-info-show-pw tooltip" onclick="togglePassword('login-input-info-data-pw-${index}')"><img class="view-ico" src='static/images/view-ico.svg') }}"><span class="tooltiptext">Copy password to clipboard</span></button><input type="password" id="login-input-info-data-pw-${index}" class="login-input-info-data-pw" value="${credential.vm_user_password}" readonly></div>
                                    <div  class="vm-infobox-content-login-info-data ${bgColor}">${credential.domain_name}</div>
                                    <div  class="vm-infobox-content-login-info-login ${bgColor}">${formattedLogin}</div>
                 `;
@@ -841,19 +848,85 @@ function FilterVMUserLoginPanel(filter) {
         console.error("Filter Error:", error);
     }
 }
+
+let searchTimeout = null;
+
+document.getElementById('vmSearchInput').addEventListener('input', function () {
+    clearTimeout(searchTimeout);
+    const queryItem = this.value.trim();
+    console.log("Longitud del item:",queryItem.length );
+
+    if (queryItem.length < 1) {
+        document.getElementById('search_predictions').innerHTML = '';
+        document.querySelector('.search_predictions').style.opacity = "0";
+    }else{
+        document.querySelector('.search_predictions').style.opacity = "1";
+    }
+
+    searchTimeout = setTimeout(async () => {
+        try {
+                const res = await fetch(`/api/predictive-search?qItem=${encodeURIComponent(queryItem)}`);
+                const data = await res.json();
+
+                const results = data.search_results || [];
+                const ul = document.getElementById('search_predictions');
+                ul.innerHTML = '';
+                console.log("Looking for love in ",results)
+
+                if(results.length > 0){
+                results.forEach((item, index) => {
+                    const ilist = document.createElement('li');
+                    ilist.className = `vm-searchItem-li-${index}`;
+                    currentPage = 0;
+                    console.log("OUT", `vm-searchItem-li-${index}`)
+                    ilist.innerHTML = `
+                        <img class="magnifier_ico" src="/static/images/magnifier-ico.svg") }}"><span onclick="PupulateUserVMAdministration('',${item.proxmox_vm_id})">${item.proxmox_vm_name} </span>
+                    `;
+                    ilist.addEventListener('click', () => {
+                        document.getElementById('vmSearchInput').value = item.proxmox_vm_name;
+                        ul.innerHTML = '';
+                    });
+                    ul.appendChild(ilist);
+                });
+            }else{
+                const ilist = document.createElement('li');
+                ilist.innerHTML = `
+                    <img class="magnifier_ico" src="/static/images/cross-ico.svg") }}"> ...no results returned.
+                `;
+                ul.appendChild(ilist);
+            }
+            } catch (e) {
+                console.error("Search failed", e);
+            }
+        }, 300); // give it a time to breath in between key inputs/api calls
+
+
+});
     
 let isLoading = false;
 let currentPage = 0;
 const pageSize = 10;
 
-async function PupulateUserVMAdministration() {
+async function PupulateUserVMAdministration(queryItem,vmid) {
     if (isLoading) return; // Prevent duplicate calls
     isLoading = true;
+
+    console.log("currentPage",currentPage);
+    if(!currentPage)
+        currentPage="";
+
+
+    if(!queryItem) {
+       queryItem = ""; //do not set to null otherwise parameter getss changed to null as string on the api side.
+    }
+    if(!vmid){
+        vmid = "";//do not set to null otherwise parameter getss changed to null as string on the api side.
+    }
 
     try {
         console.log("Fetching Page:", currentPage);
 
-        const response = await fetch(`/api/get-vm-user-search-machines?page=${currentPage}&size=${pageSize}`, {
+        const response = await fetch(`/api/get-vm-user-search-machines?page=${currentPage}&size=${pageSize}&qItem=${encodeURIComponent(queryItem)}&vmid=${vmid}`, {
             method: 'GET',
             credentials: 'include'
         });
@@ -867,13 +940,16 @@ async function PupulateUserVMAdministration() {
 
         if (data.success && vm_list.length > 0) {
             const parent_div = document.getElementById("vm_search_dataset");
+            if(currentPage === 0  ) {
+                parent_div.innerHTML="";
+            }
             showPageIndicator(currentPage); // Show page number
 
             vm_list.forEach((vm, index) => {
                 const iDiv = document.createElement('div');
                 iDiv.className = 'vm-infobox-content-search-data';
 
-                const logonstatus = vm.status === 'running' ? 'Logon to machine' : 'Unavailable for logon';
+                const logonstatus = vm.status === 'running' ? 'Connect to machine' : 'Unavailable for connection';
                 const statusCSS = vm.status === 'running' ? 'vm-admin-search-results-ico-hover' : '';
 
                 iDiv.innerHTML = `
@@ -885,6 +961,7 @@ async function PupulateUserVMAdministration() {
                         <div class="search-result-function">${vm.vm_function}</div>
                         <div class="search-result-status">${vm.status}</div>
                     </div>
+
                     <div class="vm-infobox-content-search-container-data">
                         <img class="vm-admin-search-OS-ico" src="/static/${vm.os_logo_img_path || 'images/os_default.png'}">
                     </div>
@@ -931,3 +1008,6 @@ function showPageIndicator(page) {
 
 //Initial call on load
 PupulateUserVMAdministration();
+
+
+

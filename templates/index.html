@@ -181,7 +181,7 @@
         <div class="vm-infobox-uservms-container">
             <div class="vm-infobox-header">
                 <input type="checkbox" id="vm-infobox-toggle-uservms" class="vm-toggle-checkbox">
-                    <label for="vm-infobox-toggle-uservms" class="vm-infobox-head-uservms" id="vm-infobox-user-header-text">User VM Administration</label>
+                    <label for="vm-infobox-toggle-uservms" class="vm-infobox-head-uservms" id="vm-infobox-user-header-text">VM Browser</label>
                     <label class="vm-infobox-head-ico"><img class="vm-infobox-ico" src="{{ url_for('static', filename='images/user_vms_ico.png') }}"></label>
                 <div id = "vm-infobox-content-vm-search" class="vm-infobox-content-vm-search">
                     <div class="vm-infobox-content-user-profile-pic-box">
@@ -190,7 +190,10 @@
                                 <div class="vm-infobox-content-user-text">
                                     <div  id="vm-infobox-content-user-text-name" class="vm-infobox-content-user-text-name">     
                                             <img class="vm-searchbox-ico" src="{{ url_for('static', filename='images/glass_ico.png') }}">                           
-                                            <input type="searh" class="vm-infobox-searchvm-box" placeholder="search..." onclick=""></input>
+                                            <input type="text" id="vmSearchInput" class="vm-infobox-searchvm-box" placeholder="search vm..." onclick="">
+                                            <ul id="search_predictions" class="search_predictions">                                              
+                                            </ul>
+                                        </input>
                                         </div>
                                     <div  id="vm-infobox-content-user-text-role" class="vm-infobox-content-user-text-role"></div>
                                 </div>
@@ -199,7 +202,7 @@
                     <div class="vm-infobox-content-user-search-info">
                         <!-- User info content goes here -->
                                 <div  class="vm-infobox-content-search-header"><img class="vm-admin-search-ico" src="{{ url_for('static', filename='images/menu_ico.png') }}"></div>
-                                <div  class="vm-infobox-content-search-header">My Machines</div>
+                                <div  class="vm-infobox-content-search-header">VM Repository</div>
                                 <div  class="vm-infobox-content-search-header-filter filter_search"><img class="vm-admin-search-ico" src="{{ url_for('static', filename='images/filter_settings_ico.png') }}">
                                                                                                         <div class="filter_options">
                                                                                                                                     <div class="filter_search_option" onclick=""><img class="vm-filter-option-ico" src="{{ url_for('static', filename='images/nofilter_ico.png') }}"><span class="vm-filter-option-ico-text">Clear filter</span></div>
@@ -209,8 +212,9 @@
                                 </div>
                     </div>
                     <div id = "vm_search_dataset" class="vm-search-Dataset">
+<!--   This portion gets populated by   PupulateUserVMAdministration() 
                         <div class="vm-infobox-content-search-data" id="vm-infobox-content-search-data">
-                            <!-- User info content goes here -->
+                            -- User info content goes here --
                                     <div class="vm-infobox-content-search-container-data"><img class="vm-admin-search-results-ico" src="{{ url_for('static', filename='images/logon_ico.png') }}"></div>
                                     <div class="vm-infobox-content-search-info-data">
                                         <div class="search-result-server">VMSRVSQL2019W104</div>
@@ -220,7 +224,7 @@
                                     <div class="vm-infobox-content-search-container-data"><img class="vm-admin-search-OS-ico" src="{{ url_for('static', filename='images/os_windows.png') }}"></div>
                                     <div class="vm-infobox-content-search-container-data"><img class="vm-admin-search-favorite-ico" src="{{ url_for('static', filename='images/fav_ico.png') }}"></div>
                                     <div class="vm-infobox-content-search-container-data"><img class="vm-admin-search-more-ico" src="{{ url_for('static', filename='images/more_ico.png') }}"></div>
-                        </div>
+                        </div>-->
                     </div>
                     <div id="page-indicator">Page 1</div>
                 </div>
@@ -258,7 +262,7 @@
       <div class="vm-selector">
         <div class ="top-divider" ></div>
         <span class="span-select-Console">Select VM Console:</span>
-        <select id="vmSelect">
+        <select id="vmSelect" class = "vmSelect">
             <option value="">-- Choose a VM --</option>    
         </select>
         <button id="vmBtnSelect" onclick="connectToVM()">Connect</button>

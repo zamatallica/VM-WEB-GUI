@@ -412,19 +412,26 @@ def get_vm_user_credentials():
 def get_vm_user_search_machines():
         user_id = None
         conn = None
-        vm_id = None
+        vmid = None
+        queryItem = None
+        conn = None
 
         if not current_user.is_authenticated:
             return redirect(url_for('unauthorized'))
-        
-        if not vm_id:
-            vm_id=None
+
 
         try:
-            
             page = request.args.get('page', '')
-            size = request.args.get('size', '')
+            size = request.args.get('size', '') 
+
+            vmid = request.args.get('vmid', '').strip()
+            vmid = int(vmid) if vmid.isdigit() else None
+
+            queryItem = request.args.get('qItem', '').strip()
+            queryItem = queryItem if queryItem else None
+
             user_id = current_user.id
+
             if not user_id:
                 return jsonify({'success': False, 'message': 'Unauthorized'}), 401
             
@@ -435,7 +442,7 @@ def get_vm_user_search_machines():
             with conn.cursor() as cursor:
                 ##EXEC [dbo].[usp_search_user_vms_backend] 1,  NULL  , 10,  0
                 ##cursor.execute("{CALL usp_search_user_vms_backend(?, NULL, 10, 0)}", (user_id))
-                cursor.execute("{CALL usp_search_user_vms_backend_test_DELETE(?, NULL, ?, ?)}", (user_id,size,page))
+                cursor.execute("{CALL usp_search_user_vms_backend_test_DELETE(?, ?, ?, ?, ?)}", (user_id,vmid,size,page,queryItem))
                 vms_list = cursor.fetchall()
 
             if not vms_list:
@@ -464,6 +471,50 @@ def get_vm_user_search_machines():
         finally:
             if conn:
                 conn.close()
+
+@app.route('/api/predictive-search', methods=['GET'])
+def predictive_search():
+    user_id = None
+
+    if not current_user.is_authenticated:
+        return redirect(url_for('unauthorized'))
+
+    user_id = current_user.id
+    qItem = request.args.get('qItem', '').strip() #remove trailing spaces LTRIM(RTRIM()) in SQL but more efficient 
+
+    conn = None
+
+    try:
+            if not user_id:
+                return jsonify({'success': False, 'message': 'Unauthorized'}), 401
+            
+            conn = get_db_connection()
+            if not conn:
+                return jsonify(success=False, message="Database connection failed"), 500
+                    
+            with conn.cursor() as cursor:
+                cursor.execute("{CALL usp_predictive_search_backend_test_DELETE(?)}", (qItem,))
+                results = cursor.fetchall()
+
+            if not results:
+                return jsonify({'success': False, 'message': 'Nothing found', 'Item searched': qItem}), 404
+
+            results_list = []
+            for result_item in results:
+                proxmox_vm_id, proxmox_vm_name = result_item
+                results_list.append({
+                    'proxmox_vm_id': proxmox_vm_id,
+                    'proxmox_vm_name': proxmox_vm_name
+                })
+            
+            return jsonify({'success': True, 'search_results': results_list})
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e), 'Search Item': qItem}), 500
+
+    finally:
+        if conn:
+            conn.close()
 
 @app.route('/unauthorized')
 def unauthorized():

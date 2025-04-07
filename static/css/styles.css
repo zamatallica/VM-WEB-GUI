@@ -143,7 +143,7 @@ button {
 }
 
 button:hover {
-    background: rgba(255, 255, 255, 0.1)
+    background: rgba(180, 92, 9, 0.623)
 }
 
 #vnc-container {
@@ -151,7 +151,7 @@ button:hover {
     border-radius: 8px;
     overflow: hidden;
     top:0;
-    height: 1080px;
+    height: calc(85dvh);
     width: 100%;
 
 }
@@ -160,7 +160,7 @@ button:hover {
     position: absolute;
     bottom: -18px;
     left: 10px; /* Adjust positioning */
-    width: 240px;
+    width: 15%;
     height: 33px;
     background: #ff7738b7;
     border: 1px solid #ffffff69;
@@ -170,6 +170,8 @@ button:hover {
     font-family: Arial, Helvetica, sans-serif;
     font-size: small;
     text-align: center;
+    white-space: nowrap;
+    overflow-x: hidden;
     line-height: 33px; /* Centers text vertically */
     box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.5); /* Adds a subtle shadow */
 }
@@ -184,7 +186,6 @@ button:hover {
     70% { transform: translate(3px, 1px) rotate(-1deg); }
     80% { transform: translate(-1px, -1px) rotate(1deg); }
     90% { transform: translate(1px, 2px) rotate(0deg); }
-    100% { transform: translate(1px, -2px) rotate(-1deg); }
   }
   
   .shake {
@@ -204,6 +205,12 @@ button:hover {
     color: #ffffffb7;
     padding-right: 5px;
     padding-top: 5px;
+  }
+
+  .vmSelect{
+    width: max-content;
+    border: 1px solid rgba(156, 75, 8, 0.692);
+    border-radius: 20px;
   }
 
 /* Logout User */
@@ -717,7 +724,7 @@ _________            .___         .___  _______/\  ________                .__  
     position: relative;
     padding-top: 5px;
     font-weight: bold;
-    border: 1px solid #ffffff48;
+    border: 1px solid #ffffff48;    
 }
 .canvas{
     padding-left: 5%;
@@ -757,6 +764,13 @@ _________            .___         .___  _______/\  ________                .__  
 
 /* -----INFO USER PANEL--------------------------------------------------------------------------------------- */
 /* VM USER INFO PANEL */
+.view-ico{
+    height: 15px;
+    width: 15px;
+}
+.view-ico:hover{
+    transform: scale(1.5);
+}
 .vm-infobox-content-user {
     width:  90%; /* Inherit width from container */
     height: -100%;
@@ -1181,6 +1195,7 @@ button.vm-info-show-pw{
         border-left: 0px;
         opacity: 1;
       }
+
       .vm-infobox-searchvm-box::placeholder {
         color: #aaaaaa;
       }
@@ -1362,15 +1377,15 @@ button.vm-info-show-pw{
         top: 15%;
     }
     .vm-admin-search-more-ico{
-        height: 22px;
+        height: 15px;
         position:flex;
         top: 15%;
     }
 
     #page-indicator {
         position: absolute;
-        bottom: 40px;
-        right: 30px;
+        bottom: 2%;
+        right: calc(50% - (90px/2));
         background: rgba(0, 0, 0, 0.411);
         color: #ffa34d;
         padding: 6px 12px;
@@ -1382,3 +1397,48 @@ button.vm-info-show-pw{
         pointer-events: none;
         z-index: 999;
     }
+
+    .search_predictions{
+            list-style: none;
+            width:88%;
+            text-align: left;
+            margin: 0;
+            padding: 5px;
+            left: 5.5%;
+            top:100%;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 15px;
+            border-radius: 10px;
+            background: #1b1b1be1;
+            border: 1px solid #ffaf5367;
+            border-right: 1px solid #e9750970;
+            border-top: 1px solid #e9750970;
+            box-shadow: 0 4px 6px rgba(0, 1, 1, 0.3);
+            max-height: 200px;
+            overflow-y: auto;
+            position: absolute;
+            z-index: 999;
+            white-space: nowrap;
+            visibility: visible;
+          }
+          
+          .vm-infobox-searchvm-box:focus ~ .search_predictions {
+            visibility: visible;
+          }
+
+          .search_predictions li {
+            padding: 8px 12px;
+            cursor: pointer;
+            color: #d3a087;
+          }
+          
+          .search_predictions li:hover {
+            background: #333;
+            border-radius: 5px;
+          }
+
+          .magnifier_ico{
+            height: 15px;
+            width: 15px;
+            padding-right: 5px;
+          }
