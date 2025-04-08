@@ -1419,12 +1419,9 @@ button.vm-info-show-pw{
             position: absolute;
             z-index: 999;
             white-space: nowrap;
-            visibility: visible;
+            visibility: hidden;
           }
-          
-          .vm-infobox-searchvm-box:focus ~ .search_predictions {
-            visibility: visible;
-          }
+
 
           .search_predictions li {
             padding: 8px 12px;
@@ -1442,3 +1439,4 @@ button.vm-info-show-pw{
             width: 15px;
             padding-right: 5px;
           }
+

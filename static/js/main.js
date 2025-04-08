@@ -854,14 +854,15 @@ let searchTimeout = null;
 document.getElementById('vmSearchInput').addEventListener('input', function () {
     clearTimeout(searchTimeout);
     const queryItem = this.value.trim();
-    console.log("Longitud del item:",queryItem.length );
 
-    if (queryItem.length < 1) {
-        document.getElementById('search_predictions').innerHTML = '';
-        document.querySelector('.search_predictions').style.opacity = "0";
-    }else{
-        document.querySelector('.search_predictions').style.opacity = "1";
+    document.querySelector(".search_predictions").style.visibility="visible";
+
+    if(queryItem.length == 0){
+        console.log("YES: ",queryItem.length )
+        document.querySelector(".search_predictions").style.visibility="hidden";
+        PupulateUserVMAdministration();
     }
+
 
     searchTimeout = setTimeout(async () => {
         try {
@@ -871,20 +872,22 @@ document.getElementById('vmSearchInput').addEventListener('input', function () {
                 const results = data.search_results || [];
                 const ul = document.getElementById('search_predictions');
                 ul.innerHTML = '';
-                console.log("Looking for love in ",results)
 
                 if(results.length > 0){
                 results.forEach((item, index) => {
                     const ilist = document.createElement('li');
-                    ilist.className = `vm-searchItem-li-${index}`;
-                    currentPage = 0;
-                    console.log("OUT", `vm-searchItem-li-${index}`)
                     ilist.innerHTML = `
-                        <img class="magnifier_ico" src="/static/images/magnifier-ico.svg") }}"><span onclick="PupulateUserVMAdministration('',${item.proxmox_vm_id})">${item.proxmox_vm_name} </span>
+                        <img class="magnifier_ico" src="/static/images/magnifier-ico.svg"><span">${item.proxmox_vm_name} </span>
                     `;
+                    ilist.onclick = () =>{
+                        PupulateUserVMAdministration(0, '', item.proxmox_vm_id);
+                    }
                     ilist.addEventListener('click', () => {
                         document.getElementById('vmSearchInput').value = item.proxmox_vm_name;
-                        ul.innerHTML = '';
+                        ul.innerHTML = ''; //clear predicte search results 
+                        const parent_div = document.getElementById("vm_search_dataset"); //cleanup infinte scroller
+                        parent_div.innerHTML="";
+                        document.querySelector(".search_predictions").style.visibility="hidden";
                     });
                     ul.appendChild(ilist);
                 });
@@ -907,13 +910,14 @@ let isLoading = false;
 let currentPage = 0;
 const pageSize = 10;
 
-async function PupulateUserVMAdministration(queryItem,vmid) {
+async function PupulateUserVMAdministration(page, queryItem,vmid) {
     if (isLoading) return; // Prevent duplicate calls
     isLoading = true;
 
-    console.log("currentPage",currentPage);
-    if(!currentPage)
-        currentPage="";
+    if(page == null){
+        page = currentPage ;
+    }
+    currentPage = page;
 
 
     if(!queryItem) {
@@ -924,8 +928,6 @@ async function PupulateUserVMAdministration(queryItem,vmid) {
     }
 
     try {
-        console.log("Fetching Page:", currentPage);
-
         const response = await fetch(`/api/get-vm-user-search-machines?page=${currentPage}&size=${pageSize}&qItem=${encodeURIComponent(queryItem)}&vmid=${vmid}`, {
             method: 'GET',
             credentials: 'include'
@@ -940,7 +942,7 @@ async function PupulateUserVMAdministration(queryItem,vmid) {
 
         if (data.success && vm_list.length > 0) {
             const parent_div = document.getElementById("vm_search_dataset");
-            if(currentPage === 0  ) {
+            if(currentPage == 0  ) {
                 parent_div.innerHTML="";
             }
             showPageIndicator(currentPage); // Show page number
