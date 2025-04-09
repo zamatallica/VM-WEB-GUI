@@ -30,6 +30,21 @@ body {
     min-height: 100vh;
 }
 
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-image: url('/static/images/bg-01.jpg');
+    background-size: 110% 110%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.1; 
+    z-index: -1; 
+}
+
 .login-container, .container {
     background: var(--card-bg);
     padding: 2rem;
@@ -113,7 +128,6 @@ button:hover {
 }
 
 .vm-selector {
-    background: #2d2d2d;
     border-radius: 1px;
     margin-bottom: 20px;
     left: 0%;
@@ -551,6 +565,8 @@ _________            .___         .___  _______/\  ________                .__  
 .container{
     padding-right: 1%;
     padding-left: 1%;
+    width:76%;
+    background: radial-gradient(#1f1e1ea6 25%, #272727cb 100%);
 }
 
 .vm-infobox-container {
@@ -1439,4 +1455,5 @@ button.vm-info-show-pw{
             width: 15px;
             padding-right: 5px;
           }
+
 

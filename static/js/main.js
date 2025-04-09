@@ -860,7 +860,7 @@ document.getElementById('vmSearchInput').addEventListener('input', function () {
     if(queryItem.length == 0){
         console.log("YES: ",queryItem.length )
         document.querySelector(".search_predictions").style.visibility="hidden";
-        PupulateUserVMAdministration();
+        PupulateUserVMAdministration(0, '', '');
     }
 
 
@@ -877,7 +877,7 @@ document.getElementById('vmSearchInput').addEventListener('input', function () {
                 results.forEach((item, index) => {
                     const ilist = document.createElement('li');
                     ilist.innerHTML = `
-                        <img class="magnifier_ico" src="/static/images/magnifier-ico.svg"><span">${item.proxmox_vm_name} </span>
+                        <img class="magnifier_ico" src="/static/images/magnifier-ico.svg"><span>${item.proxmox_vm_name} </span>
                     `;
                     ilist.onclick = () =>{
                         PupulateUserVMAdministration(0, '', item.proxmox_vm_id);
@@ -963,7 +963,6 @@ async function PupulateUserVMAdministration(page, queryItem,vmid) {
                         <div class="search-result-function">${vm.vm_function}</div>
                         <div class="search-result-status">${vm.status}</div>
                     </div>
-
                     <div class="vm-infobox-content-search-container-data">
                         <img class="vm-admin-search-OS-ico" src="/static/${vm.os_logo_img_path || 'images/os_default.png'}">
                     </div>
@@ -992,8 +991,27 @@ async function PupulateUserVMAdministration(page, queryItem,vmid) {
 // Attach infinite scroll listener
 document.getElementById("vm_search_dataset").addEventListener("scroll", function () {
     const container = this;
+
     if (container.scrollTop + container.clientHeight >= container.scrollHeight - 10) {
-        PupulateUserVMAdministration();
+        PupulateUserVMAdministration(currentPage, document.getElementById('vmSearchInput').value ,'');
+    }
+});
+
+//Hide predictive seach on inpurbox focus out
+document.addEventListener('click', (e) => {
+    const predBox = document.querySelector('.search_predictions');
+    if (!document.getElementById('vmSearchInput').contains(e.target)) {
+        predBox.style.visibility = 'hidden';
+    }
+});
+
+//On enter search for whatever search term on input
+document.getElementById('vmSearchInput').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+        const parent_div = document.getElementById("vm_search_dataset");
+        parent_div.innerHTML="";
+        PupulateUserVMAdministration(0, document.getElementById('vmSearchInput').value ,'');
+        document.querySelector(".search_predictions").style.visibility="hidden";
     }
 });
 
