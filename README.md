@@ -1,7 +1,7 @@
 # PROXMOX VNC VM Web GUI (https://zamatallica.ddns.net/)
 
 ![full_infrastructure_architecture_wSQL](https://github.com/user-attachments/assets/317eae37-cf0d-4b72-af7e-5b0e04ada3cd)
-![image](https://github.com/user-attachments/assets/29f7606b-3e49-40db-bec7-87742b4880db)
+![image](https://github.com/user-attachments/assets/6b82f5b0-582a-49cb-9bd5-2299910765a9)
 ![image](https://github.com/user-attachments/assets/37034d96-c879-4170-81e3-0d2a200dfcba)
 ![image](https://github.com/user-attachments/assets/8a5b17d2-bd12-410f-ada5-0dfe320cfbac)
 ![image](https://github.com/user-attachments/assets/53ca2074-4f35-4bb8-ba12-fc3a24f22d35)
