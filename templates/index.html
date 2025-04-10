@@ -234,6 +234,7 @@
         </div>
     <!-- Login Screen -->
     <div class="login-container" id="loginContainer">
+        <div class="main-logo"><div class="main-logo-container"><img class ="main-logo-img" src="{{ url_for('static', filename='images/logo-front-clean.png') }}"><div class="main-logo-text">PROXMOX WEBGUI</div></div></div>
         <h2>Secure Login</h2>
         <form id="loginForm" onsubmit="event.preventDefault(); attemptLogin();">
             <input type="text" id="username" placeholder="Username" required autocomplete="username">
@@ -244,11 +245,12 @@
         <div class="security-info">
             <p>Failed attempts: <span id="attemptCount">0</span>/5</p>
         </div>
+        <div class="footer-main-logo"><div class="footer-main-logo-container"><img class ="footer-main-logo-img" src="{{ url_for('static', filename='images/logo-front-clean.png') }}"><div class="footer-logo-text">Copyright © 2025 Alejandro Escobedo. All rights reserved.<div class="footer-credits">Background image by<a href="https://www.artstation.com/xebelion">&nbsp;&nbsp;Xebelion</a>.</div></div></div></div>
     </div>
     <!-- Main Proxmox Interface (hidden until login) -->
     <div class="container hidden" id="mainInterface">
         <div class="user-menu-wrapper">
-            <img  class="logo-placeholder" src="{{ url_for('static', filename='images/main_icon_placeholder.png') }}" alt="web gui logo"> <div class="logo-placeholder-text">PROXMOX WEBGUI</div>
+            <img  class="logo-placeholder" src="{{ url_for('static', filename='images/logo-front-clean.png') }}" alt="web gui logo"> <div class="logo-placeholder-text">PROXMOX WEBGUI</div>
             <img  id="profile-pic" class="logout-btnimg" src="{{ url_for('static', filename='images/user.png') }}" alt="User Icon" onclick="toggleUserMenu()">
             <span class="logout-btntxt" id="username-display">username</span>
             <div class="user-dropdown" id="usermenuwrapper">
